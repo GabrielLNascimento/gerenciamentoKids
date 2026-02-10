@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Crianca, criancasAPI } from '../services/api';
+import { Crianca } from '../services/api';
 
 interface CriancaFormProps {
   crianca?: Crianca;

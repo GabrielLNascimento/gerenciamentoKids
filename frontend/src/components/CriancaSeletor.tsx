@@ -8,7 +8,7 @@ interface CriancaSeletorProps {
   onRemover: (criancaId: number) => void;
 }
 
-const CriancaSeletor = ({ cultoId, criancasNoCulto, onAdicionar, onRemover }: CriancaSeletorProps) => {
+const CriancaSeletor = ({ cultoId: _cultoId, criancasNoCulto, onAdicionar, onRemover: _onRemover }: CriancaSeletorProps) => {
   const [busca, setBusca] = useState('');
   const [criancas, setCriancas] = useState<Crianca[]>([]);
   const [loading, setLoading] = useState(false);
@@ -34,10 +34,6 @@ const CriancaSeletor = ({ cultoId, criancasNoCulto, onAdicionar, onRemover }: Cr
   const criancasDisponiveis = criancas.filter(
     (c) => !criancasNoCulto.some((cnc) => cnc.id === c.id)
   );
-
-  const estaNoCulto = (criancaId?: number) => {
-    return criancasNoCulto.some((c) => c.id === criancaId);
-  };
 
   return (
     <div className="space-y-4 animate-fade-in">

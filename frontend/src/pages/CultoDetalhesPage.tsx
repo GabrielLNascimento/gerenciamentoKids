@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Culto, Crianca, cultosAPI, criancasAPI } from '../services/api';
+import { Culto, Crianca, cultosAPI } from '../services/api';
 import CriancaSeletor from '../components/CriancaSeletor';
 
 const CultoDetalhesPage = () => {
@@ -75,7 +75,7 @@ const CultoDetalhesPage = () => {
       day: 'numeric',
     });
   };
-  
+
   if (loading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">

@@ -73,7 +73,25 @@ Acesse: **http://localhost:3001**. A API está em **http://localhost:3001/api/**
 
 ---
 
-### Opção C: VPS ou servidor próprio
+### Opção C: Vercel
+
+O projeto está configurado para rodar no Vercel com **frontend + backend** (API serverless) no mesmo domínio.
+
+1. Crie uma conta em [vercel.com](https://vercel.com) e conecte seu GitHub.
+2. **Add New** → **Project** e importe o repositório do `gerenciamentoKids`.
+3. O Vercel detecta o `vercel.json`; confira se está assim:
+    - **Build Command**: `npm run install:all && npm run build` (ou deixe em branco para usar o do `vercel.json`)
+    - **Output Directory**: `backend/public`
+4. Variáveis de ambiente (**Settings** → **Environment Variables**):
+    - **`DATABASE_URL`**: connection string do Neon (obrigatória). Obtenha em [console.neon.tech](https://console.neon.tech).
+    - `NODE_ENV`: `production`
+5. Clique em **Deploy**. A URL será algo como `https://gerenciamento-kids.vercel.app`.
+
+**Observação**: A API roda como função serverless. O `vercel.json` define rewrites para `/api/*` e o fallback SPA para o frontend. Arquivos estáticos têm prioridade sobre os rewrites.
+
+---
+
+### Opção D: VPS ou servidor próprio
 
 No servidor (Linux):
 
@@ -124,7 +142,11 @@ Use um **process manager** (ex.: PM2) e um **proxy reverso** (Nginx/Caddy) com H
 
 ---
 
-## 6. Resumo rápido (Railway)
+## 6. Resumo rápido
+
+**Railway**: Repo no GitHub → New Project → Build `npm run install:all && npm run build` → Start `npm run start` → `DATABASE_URL` → Deploy.
+
+**Vercel**: Repo no GitHub → Add Project → variável `DATABASE_URL` → Deploy (usa `vercel.json`).
 
 1. Repo no GitHub.
 2. Railway → New Project → Deploy from GitHub.
