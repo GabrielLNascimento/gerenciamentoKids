@@ -4,11 +4,25 @@ Este guia explica como colocar o **gerenciamentoKids** (frontend + backend) em p
 
 ## Visão geral
 
--   **Backend**: Express (Node) + SQLite, roda na porta definida por `PORT` (ex.: 3001).
+-   **Backend**: Express (Node) + **Neon (PostgreSQL)**, roda na porta definida por `PORT` (ex.: 3001).
 -   **Frontend**: React (Vite), buildado e servido pelo próprio backend na mesma URL.
 -   Um único deploy serve site e API no mesmo domínio; o frontend usa `/api` para as requisições.
+-   **Banco**: Neon (PostgreSQL serverless). Crie um projeto em [console.neon.tech](https://console.neon.tech) e use a connection string em `DATABASE_URL`.
 
-## 1. Testar em produção localmente
+## 1. Configurar o banco (Neon)
+
+1. Crie uma conta em [console.neon.tech](https://console.neon.tech).
+2. Crie um projeto e copie a **connection string** (PostgreSQL).
+3. No projeto, crie `backend/.env` com:
+
+```env
+PORT=3001
+DATABASE_URL=postgresql://usuario:senha@ep-xxx.region.aws.neon.tech/neondb?sslmode=require
+```
+
+As tabelas são criadas automaticamente na primeira subida do backend.
+
+## 2. Testar em produção localmente
 
 Na raiz do projeto:
 
@@ -20,9 +34,11 @@ npm run start        # sobe o backend (que já serve o frontend)
 
 Acesse: **http://localhost:3001**. A API está em **http://localhost:3001/api/**.
 
+**Testes**: em `backend`, rode `npm test`. É necessário ter `DATABASE_URL` no `.env`.
+
 ---
 
-## 2. Deploy em produção
+## 3. Deploy em produção
 
 ### Opção A: Railway (recomendado, plano gratuito)
 
@@ -36,12 +52,8 @@ Acesse: **http://localhost:3001**. A API está em **http://localhost:3001/api/**
 4. Variáveis de ambiente (Settings → Variables):
     - `PORT`: Railway define automaticamente; não precisa criar se já existir.
     - `NODE_ENV`: `production`
-    - (Opcional) `DB_PATH`: ex. `/data/database.sqlite` se usar volume (veja abaixo).
-5. Para **persistir o SQLite** no Railway:
-    - No projeto, **Add Service** → **Volume**.
-    - Monte o volume em um path, ex.: `/data`.
-    - Defina `DB_PATH=/data/database.sqlite`.
-6. Deploy: o Railway faz build e start; a URL do serviço será algo como `https://seu-app.up.railway.app`.
+    - **`DATABASE_URL`**: connection string do Neon (ex.: `postgresql://user:pass@ep-xxx.region.aws.neon.tech/neondb?sslmode=require`). Obtenha em [console.neon.tech](https://console.neon.tech).
+5. Deploy: o Railway faz build e start; a URL do serviço será algo como `https://seu-app.up.railway.app`.
 
 ---
 
@@ -56,10 +68,8 @@ Acesse: **http://localhost:3001**. A API está em **http://localhost:3001/api/**
     - **Environment**: Node (versão 18 ou 20).
 5. Variáveis:
     - `NODE_ENV`: `production`
-    - (Opcional) `DB_PATH`: para disco persistente, use path do disco do Render se disponível.
+    - **`DATABASE_URL`**: connection string do Neon (obtenha em [console.neon.tech](https://console.neon.tech)).
 6. **Create Web Service**. A URL será algo como `https://seu-app.onrender.com`.
-
-**Nota**: No plano gratuito do Render, o disco pode ser efêmero; o SQLite pode ser resetado após inatividade. Para dados permanentes, use volume (se disponível) ou migre para um banco hospedado depois.
 
 ---
 
@@ -77,7 +87,7 @@ npm run build
 Variáveis de ambiente (ex.: em `.env` no `backend/` ou no systemd):
 
 -   `PORT=3001` (ou a porta que quiser).
--   `DB_PATH=/var/data/gerenciamentoKids/database.sqlite` (path persistente).
+-   **`DATABASE_URL`**: connection string do Neon (PostgreSQL).
 
 Inicie o backend:
 
@@ -92,17 +102,17 @@ Use um **process manager** (ex.: PM2) e um **proxy reverso** (Nginx/Caddy) com H
 
 ---
 
-## 3. Variáveis de ambiente
+## 4. Variáveis de ambiente
 
-| Variável   | Uso                                                                         |
-| ---------- | --------------------------------------------------------------------------- |
-| `PORT`     | Porta do servidor (muitos provedores definem automaticamente).              |
-| `DB_PATH`  | Caminho do arquivo SQLite (ex.: `/data/database.sqlite` para persistência). |
-| `NODE_ENV` | `production` em produção.                                                   |
+| Variável           | Uso                                                                                |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| `PORT`             | Porta do servidor (muitos provedores definem automaticamente).                     |
+| **`DATABASE_URL`** | Connection string do Neon (PostgreSQL). Obrigatória. Obtenha em console.neon.tech. |
+| `NODE_ENV`         | `production` em produção.                                                          |
 
 ---
 
-## 4. Scripts úteis (raiz do projeto)
+## 5. Scripts úteis (raiz do projeto)
 
 | Comando                | Descrição                                                                          |
 | ---------------------- | ---------------------------------------------------------------------------------- |
@@ -114,13 +124,13 @@ Use um **process manager** (ex.: PM2) e um **proxy reverso** (Nginx/Caddy) com H
 
 ---
 
-## 5. Resumo rápido (Railway)
+## 6. Resumo rápido (Railway)
 
 1. Repo no GitHub.
 2. Railway → New Project → Deploy from GitHub.
 3. Build: `npm run install:all && npm run build`
 4. Start: `npm run start`
-5. (Opcional) Volume para `DB_PATH` e variável `DB_PATH=/data/database.sqlite`.
+5. Defina a variável **`DATABASE_URL`** com a connection string do Neon.
 6. Deploy; usar a URL fornecida pelo Railway.
 
 Depois disso, o projeto estará no ar com frontend e API no mesmo domínio.

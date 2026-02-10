@@ -17,7 +17,8 @@ const CultosTable = ({ cultos, onEdit, onDelete }: CultosTableProps) => {
   }
 
   const formatarData = (data: string) => {
-    const date = new Date(data);
+    const [year, month, day] = data.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // mês é 0-indexed
     return date.toLocaleDateString('pt-BR');
   };
 

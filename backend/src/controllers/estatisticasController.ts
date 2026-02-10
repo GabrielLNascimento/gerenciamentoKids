@@ -4,32 +4,29 @@ import { Estatisticas } from '../types';
 
 export const obterEstatisticas = async (req: Request, res: Response) => {
     try {
-        // Total de crianças
-        const totalCriancasResult = await dbGet(
-            'SELECT COUNT(*) as total FROM criancas'
+        const totalCriancasResult = await dbGet<{ total: string }>(
+            'SELECT COUNT(*)::int as total FROM criancas'
         );
-        const totalCriancas = (totalCriancasResult as any)?.total || 0;
+        const totalCriancas = Number(totalCriancasResult?.total ?? 0);
 
-        // Total de cultos
-        const totalCultosResult = await dbGet(
-            'SELECT COUNT(*) as total FROM cultos'
+        const totalCultosResult = await dbGet<{ total: string }>(
+            'SELECT COUNT(*)::int as total FROM cultos'
         );
-        const totalCultos = (totalCultosResult as any)?.total || 0;
+        const totalCultos = Number(totalCultosResult?.total ?? 0);
 
-        // Frequência média (total de presenças / total de cultos)
-        const totalPresencasResult = await dbGet(
-            'SELECT COUNT(*) as total FROM presenca'
+        const totalPresencasResult = await dbGet<{ total: string }>(
+            'SELECT COUNT(*)::int as total FROM presenca'
         );
-        const totalPresencas = (totalPresencasResult as any)?.total || 0;
+        const totalPresencas = Number(totalPresencasResult?.total ?? 0);
         const frequenciaMedia =
             totalCultos > 0
-                ? (totalPresencas / totalCultos).toFixed(2)
-                : '0.00';
+                ? Number((totalPresencas / totalCultos).toFixed(2))
+                : 0;
 
         const estatisticas: Estatisticas = {
-            totalCriancas: Number(totalCriancas),
-            totalCultos: Number(totalCultos),
-            frequenciaMedia: Number(frequenciaMedia),
+            totalCriancas,
+            totalCultos,
+            frequenciaMedia,
         };
 
         res.json(estatisticas);

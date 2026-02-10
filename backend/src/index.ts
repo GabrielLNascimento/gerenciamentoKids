@@ -1,13 +1,16 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
-import dotenv from 'dotenv';
+import { ensureInit } from './database/db';
 import criancasRoutes from './routes/criancasRoutes';
 import cultosRoutes from './routes/cultosRoutes';
 import estatisticasRoutes from './routes/estatisticasRoutes';
 
-dotenv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,6 +36,13 @@ if (fs.existsSync(publicDir)) {
     });
 }
 
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-});
+ensureInit()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Servidor rodando na porta ${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('Erro ao conectar ao banco (Neon/PostgreSQL):', err);
+        process.exit(1);
+    });

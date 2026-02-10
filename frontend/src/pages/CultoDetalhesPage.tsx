@@ -66,7 +66,8 @@ const CultoDetalhesPage = () => {
   };
 
   const formatarData = (data: string) => {
-    const date = new Date(data);
+    const [year, month, day] = data.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('pt-BR', {
       weekday: 'long',
       year: 'numeric',
@@ -74,7 +75,7 @@ const CultoDetalhesPage = () => {
       day: 'numeric',
     });
   };
-
+  
   if (loading) {
     return (
       <div className="px-4 sm:px-6 lg:px-8">

@@ -1,15 +1,18 @@
 import request from 'supertest';
 import express from 'express';
 import criancasRoutes from '../routes/criancasRoutes';
-import { dbRun, dbAll } from '../database/db';
+import { dbRun, dbAll, ensureInit } from '../database/db';
 
 const app = express();
 app.use(express.json());
 app.use('/api/criancas', criancasRoutes);
 
 describe('API de Crianças', () => {
+    beforeAll(async () => {
+        await ensureInit();
+    });
+
     beforeEach(async () => {
-        // Limpar tabela antes de cada teste
         await dbRun('DELETE FROM presenca');
         await dbRun('DELETE FROM criancas');
     });
@@ -42,13 +45,12 @@ describe('API de Crianças', () => {
     });
 
     test('GET /api/criancas - Listar crianças', async () => {
-        // Criar algumas crianças
         await dbRun(
-            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES (?, ?, ?, ?)',
+            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
             ['João', 8, 'Maria', '11999999999']
         );
         await dbRun(
-            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES (?, ?, ?, ?)',
+            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
             ['Ana', 10, 'Pedro', '11888888888']
         );
 
@@ -60,11 +62,11 @@ describe('API de Crianças', () => {
 
     test('GET /api/criancas/buscar?nome=João - Buscar crianças por nome', async () => {
         await dbRun(
-            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES (?, ?, ?, ?)',
+            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
             ['João Silva', 8, 'Maria', '11999999999']
         );
         await dbRun(
-            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES (?, ?, ?, ?)',
+            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
             ['Ana', 10, 'Pedro', '11888888888']
         );
 
@@ -79,7 +81,7 @@ describe('API de Crianças', () => {
 
     test('PUT /api/criancas/:id - Atualizar criança', async () => {
         const result = await dbRun(
-            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES (?, ?, ?, ?)',
+            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
             ['João', 8, 'Maria', '11999999999']
         );
 
@@ -99,13 +101,13 @@ describe('API de Crianças', () => {
 
     test('DELETE /api/criancas/:id - Deletar criança', async () => {
         const result = await dbRun(
-            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES (?, ?, ?, ?)',
+            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
             ['João', 8, 'Maria', '11999999999']
         );
 
         await request(app).delete(`/api/criancas/${result.lastID}`).expect(204);
 
-        const criancas = await dbAll('SELECT * FROM criancas WHERE id = ?', [
+        const criancas = await dbAll('SELECT * FROM criancas WHERE id = $1', [
             result.lastID,
         ]);
         expect(criancas.length).toBe(0);

@@ -1,98 +1,104 @@
-import sqlite3 from 'sqlite3';
-import { promisify } from 'util';
-import path from 'path';
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const dbPath =
-    process.env.DB_PATH || path.join(__dirname, '../../database.sqlite');
+const connectionString = process.env.DATABASE_URL;
 
-class Database {
-    private db: sqlite3.Database;
+if (!connectionString) {
+    console.warn(
+        'DATABASE_URL não definida. Configure a connection string do Neon no .env'
+    );
+}
 
-    constructor() {
-        this.db = new sqlite3.Database(dbPath, (err) => {
-            if (err) {
-                console.error('Erro ao conectar ao banco de dados:', err);
-            } else {
-                console.log('Conectado ao banco de dados SQLite');
-                this.initTables();
-            }
-        });
-    }
+const pool = new Pool({
+    connectionString,
+    ssl: connectionString?.includes('neon.tech')
+        ? { rejectUnauthorized: false }
+        : undefined,
+});
 
-    private initTables() {
-        // Tabela de crianças
-        this.db.run(`
-      CREATE TABLE IF NOT EXISTS criancas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        idade INTEGER NOT NULL,
-        responsavel TEXT NOT NULL,
-        telefone TEXT NOT NULL,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-        // Tabela de cultos
-        this.db.run(`
-      CREATE TABLE IF NOT EXISTS cultos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        periodo TEXT NOT NULL,
-        data TEXT NOT NULL,
-        userId TEXT,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
-
-        // Tabela de presença (relação entre crianças e cultos)
-        this.db.run(`
-      CREATE TABLE IF NOT EXISTS presenca (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        criancaId INTEGER NOT NULL,
-        cultoId INTEGER NOT NULL,
-        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (criancaId) REFERENCES criancas(id) ON DELETE CASCADE,
-        FOREIGN KEY (cultoId) REFERENCES cultos(id) ON DELETE CASCADE,
-        UNIQUE(criancaId, cultoId)
-      )
-    `);
-    }
-
-    getDb(): sqlite3.Database {
-        return this.db;
-    }
-
-    close() {
-        return new Promise<void>((resolve, reject) => {
-            this.db.close((err) => {
-                if (err) reject(err);
-                else resolve();
-            });
-        });
+export async function initTables(): Promise<void> {
+    const client = await pool.connect();
+    try {
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS criancas (
+                id SERIAL PRIMARY KEY,
+                nome TEXT NOT NULL,
+                idade INTEGER NOT NULL,
+                responsavel TEXT NOT NULL,
+                telefone TEXT NOT NULL,
+                "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS cultos (
+                id SERIAL PRIMARY KEY,
+                nome TEXT NOT NULL,
+                periodo TEXT NOT NULL,
+                data TEXT NOT NULL,
+                "userId" TEXT,
+                "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS presenca (
+                id SERIAL PRIMARY KEY,
+                "criancaId" INTEGER NOT NULL REFERENCES criancas(id) ON DELETE CASCADE,
+                "cultoId" INTEGER NOT NULL REFERENCES cultos(id) ON DELETE CASCADE,
+                "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE("criancaId", "cultoId")
+            )
+        `);
+        console.log('Tabelas PostgreSQL (Neon) verificadas/criadas.');
+    } finally {
+        client.release();
     }
 }
 
-export const database = new Database();
-export const db = database.getDb();
+// Inicializa as tabelas ao carregar o módulo (conexão assíncrona)
+let initPromise: Promise<void> | null = null;
+export function ensureInit(): Promise<void> {
+    if (!initPromise) {
+        initPromise = initTables();
+    }
+    return initPromise;
+}
 
-// Funções auxiliares promisificadas
-export const dbGet = promisify(db.get.bind(db));
-export const dbAll = promisify(db.all.bind(db));
-
-// dbRun customizado para retornar lastID
-export const dbRun = (
+/** Retorna a primeira linha ou null (equivalente ao dbGet do SQLite). */
+export async function dbGet<T = any>(
     sql: string,
     params?: any[]
-): Promise<{ lastID: number; changes: number }> => {
-    return new Promise((resolve, reject) => {
-        db.run(sql, params || [], function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve({ lastID: this.lastID, changes: this.changes });
-            }
-        });
-    });
-};
+): Promise<T | null> {
+    const result = await pool.query(sql, params ?? []);
+    return (result.rows[0] as T) ?? null;
+}
+
+/** Retorna todas as linhas (equivalente ao dbAll do SQLite). */
+export async function dbAll<T = any>(
+    sql: string,
+    params?: any[]
+): Promise<T[]> {
+    const result = await pool.query(sql, params ?? []);
+    return result.rows as T[];
+}
+
+/** Executa INSERT/UPDATE/DELETE. Para INSERT, use RETURNING id e lastID virá preenchido. */
+export async function dbRun(
+    sql: string,
+    params?: any[]
+): Promise<{ lastID: number; changes: number }> {
+    const result = await pool.query(sql, params ?? []);
+    const row = result.rows[0];
+    const rawId = row?.id;
+    const lastID = rawId !== undefined && rawId !== null ? Number(rawId) : 0;
+    const changes = result.rowCount ?? 0;
+    return { lastID, changes };
+}
+
+export async function close(): Promise<void> {
+    await pool.end();
+}
+
+export { pool };

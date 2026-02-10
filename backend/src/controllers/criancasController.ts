@@ -13,13 +13,14 @@ export const criarCrianca = async (req: Request, res: Response) => {
         }
 
         const result = await dbRun(
-            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES (?, ?, ?, ?)',
+            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
             [nome, idade, responsavel, telefone]
         );
 
-        const crianca = await dbGet('SELECT * FROM criancas WHERE id = ?', [
-            result.lastID,
-        ]);
+        const crianca = await dbGet<Crianca>(
+            'SELECT * FROM criancas WHERE id = $1',
+            [result.lastID]
+        );
         res.status(201).json(crianca);
     } catch (error) {
         console.error('Erro ao criar criança:', error);
@@ -29,7 +30,9 @@ export const criarCrianca = async (req: Request, res: Response) => {
 
 export const listarCriancas = async (req: Request, res: Response) => {
     try {
-        const criancas = await dbAll('SELECT * FROM criancas ORDER BY nome');
+        const criancas = await dbAll<Crianca>(
+            'SELECT * FROM criancas ORDER BY nome'
+        );
         res.json(criancas);
     } catch (error) {
         console.error('Erro ao listar crianças:', error);
@@ -46,8 +49,8 @@ export const buscarCriancasPorNome = async (req: Request, res: Response) => {
                 .json({ error: 'Parâmetro nome é obrigatório' });
         }
 
-        const criancas = await dbAll(
-            'SELECT * FROM criancas WHERE nome LIKE ? ORDER BY nome',
+        const criancas = await dbAll<Crianca>(
+            'SELECT * FROM criancas WHERE nome ILIKE $1 ORDER BY nome',
             [`%${nome}%`]
         );
         res.json(criancas);
@@ -60,9 +63,10 @@ export const buscarCriancasPorNome = async (req: Request, res: Response) => {
 export const obterCrianca = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const crianca = await dbGet('SELECT * FROM criancas WHERE id = ?', [
-            id,
-        ]);
+        const crianca = await dbGet<Crianca>(
+            'SELECT * FROM criancas WHERE id = $1',
+            [id]
+        );
 
         if (!crianca) {
             return res.status(404).json({ error: 'Criança não encontrada' });
@@ -87,13 +91,14 @@ export const atualizarCrianca = async (req: Request, res: Response) => {
         }
 
         await dbRun(
-            'UPDATE criancas SET nome = ?, idade = ?, responsavel = ?, telefone = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
+            'UPDATE criancas SET nome = $1, idade = $2, responsavel = $3, telefone = $4, "updatedAt" = CURRENT_TIMESTAMP WHERE id = $5',
             [nome, idade, responsavel, telefone, id]
         );
 
-        const crianca = await dbGet('SELECT * FROM criancas WHERE id = ?', [
-            id,
-        ]);
+        const crianca = await dbGet<Crianca>(
+            'SELECT * FROM criancas WHERE id = $1',
+            [id]
+        );
         res.json(crianca);
     } catch (error) {
         console.error('Erro ao atualizar criança:', error);
@@ -104,7 +109,7 @@ export const atualizarCrianca = async (req: Request, res: Response) => {
 export const deletarCrianca = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        await dbRun('DELETE FROM criancas WHERE id = ?', [id]);
+        await dbRun('DELETE FROM criancas WHERE id = $1', [id]);
         res.status(204).send();
     } catch (error) {
         console.error('Erro ao deletar criança:', error);

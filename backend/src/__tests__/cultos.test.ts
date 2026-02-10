@@ -1,13 +1,17 @@
 import request from 'supertest';
 import express from 'express';
 import cultosRoutes from '../routes/cultosRoutes';
-import { dbRun, dbAll } from '../database/db';
+import { dbRun, dbAll, ensureInit } from '../database/db';
 
 const app = express();
 app.use(express.json());
 app.use('/api/cultos', cultosRoutes);
 
 describe('API de Cultos', () => {
+    beforeAll(async () => {
+        await ensureInit();
+    });
+
     beforeEach(async () => {
         await dbRun('DELETE FROM presenca');
         await dbRun('DELETE FROM cultos');
@@ -33,11 +37,11 @@ describe('API de Cultos', () => {
 
     test('GET /api/cultos - Listar cultos', async () => {
         await dbRun(
-            'INSERT INTO cultos (nome, periodo, data) VALUES (?, ?, ?)',
+            'INSERT INTO cultos (nome, periodo, data) VALUES ($1, $2, $3) RETURNING id',
             ['Culto 1', 'Manhã', '2024-01-15']
         );
         await dbRun(
-            'INSERT INTO cultos (nome, periodo, data) VALUES (?, ?, ?)',
+            'INSERT INTO cultos (nome, periodo, data) VALUES ($1, $2, $3) RETURNING id',
             ['Culto 2', 'Tarde', '2024-01-16']
         );
 
@@ -49,7 +53,7 @@ describe('API de Cultos', () => {
 
     test('PUT /api/cultos/:id - Atualizar culto', async () => {
         const result = await dbRun(
-            'INSERT INTO cultos (nome, periodo, data) VALUES (?, ?, ?)',
+            'INSERT INTO cultos (nome, periodo, data) VALUES ($1, $2, $3) RETURNING id',
             ['Culto 1', 'Manhã', '2024-01-15']
         );
 
@@ -68,13 +72,13 @@ describe('API de Cultos', () => {
 
     test('DELETE /api/cultos/:id - Deletar culto', async () => {
         const result = await dbRun(
-            'INSERT INTO cultos (nome, periodo, data) VALUES (?, ?, ?)',
+            'INSERT INTO cultos (nome, periodo, data) VALUES ($1, $2, $3) RETURNING id',
             ['Culto 1', 'Manhã', '2024-01-15']
         );
 
         await request(app).delete(`/api/cultos/${result.lastID}`).expect(204);
 
-        const cultos = await dbAll('SELECT * FROM cultos WHERE id = ?', [
+        const cultos = await dbAll('SELECT * FROM cultos WHERE id = $1', [
             result.lastID,
         ]);
         expect(cultos.length).toBe(0);

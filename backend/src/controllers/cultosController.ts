@@ -13,11 +13,11 @@ export const criarCulto = async (req: Request, res: Response) => {
         }
 
         const result = await dbRun(
-            'INSERT INTO cultos (nome, periodo, data, userId) VALUES (?, ?, ?, ?)',
+            'INSERT INTO cultos (nome, periodo, data, "userId") VALUES ($1, $2, $3, $4) RETURNING id',
             [nome, periodo, data, userId || null]
         );
 
-        const culto = await dbGet('SELECT * FROM cultos WHERE id = ?', [
+        const culto = await dbGet<Culto>('SELECT * FROM cultos WHERE id = $1', [
             result.lastID,
         ]);
         res.status(201).json(culto);
@@ -29,7 +29,7 @@ export const criarCulto = async (req: Request, res: Response) => {
 
 export const listarCultos = async (req: Request, res: Response) => {
     try {
-        const cultos = await dbAll(
+        const cultos = await dbAll<Culto>(
             'SELECT * FROM cultos ORDER BY data DESC, nome'
         );
         res.json(cultos);
@@ -42,7 +42,9 @@ export const listarCultos = async (req: Request, res: Response) => {
 export const obterCulto = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const culto = await dbGet('SELECT * FROM cultos WHERE id = ?', [id]);
+        const culto = await dbGet<Culto>('SELECT * FROM cultos WHERE id = $1', [
+            id,
+        ]);
 
         if (!culto) {
             return res.status(404).json({ error: 'Culto não encontrado' });
@@ -67,11 +69,13 @@ export const atualizarCulto = async (req: Request, res: Response) => {
         }
 
         await dbRun(
-            'UPDATE cultos SET nome = ?, periodo = ?, data = ?, userId = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
+            'UPDATE cultos SET nome = $1, periodo = $2, data = $3, "userId" = $4, "updatedAt" = CURRENT_TIMESTAMP WHERE id = $5',
             [nome, periodo, data, userId || null, id]
         );
 
-        const culto = await dbGet('SELECT * FROM cultos WHERE id = ?', [id]);
+        const culto = await dbGet<Culto>('SELECT * FROM cultos WHERE id = $1', [
+            id,
+        ]);
         res.json(culto);
     } catch (error) {
         console.error('Erro ao atualizar culto:', error);
@@ -82,7 +86,7 @@ export const atualizarCulto = async (req: Request, res: Response) => {
 export const deletarCulto = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        await dbRun('DELETE FROM cultos WHERE id = ?', [id]);
+        await dbRun('DELETE FROM cultos WHERE id = $1', [id]);
         res.status(204).send();
     } catch (error) {
         console.error('Erro ao deletar culto:', error);
