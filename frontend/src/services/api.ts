@@ -1,20 +1,29 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: "/api",
     headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
     },
 });
 
 export interface Crianca {
     id?: number;
     nome: string;
-    idade: number;
+    dataNascimento: string;
     responsavel: string;
     telefone: string;
+    codigo?: number;
+    restricaoAlimentar?: boolean;
+    descricaoRestricaoAlimentar?: string | null;
+    necessidadeEspecial?: boolean;
+    descricaoNecessidadeEspecial?: string | null;
+    autorizaUsoImagem?: boolean;
+    autorizaTrocaFralda?: boolean;
     createdAt?: string;
     updatedAt?: string;
+    presencaData?: string;
+    checkedOut?: boolean;
 }
 
 export interface Culto {
@@ -35,12 +44,12 @@ export interface Estatisticas {
 
 // APIs de Crianças
 export const criancasAPI = {
-    listar: () => api.get<Crianca[]>('/criancas'),
+    listar: () => api.get<Crianca[]>("/criancas"),
     buscar: (nome: string) =>
         api.get<Crianca[]>(`/criancas/buscar?nome=${encodeURIComponent(nome)}`),
     obter: (id: number) => api.get<Crianca>(`/criancas/${id}`),
-    criar: (crianca: Omit<Crianca, 'id'>) =>
-        api.post<Crianca>('/criancas', crianca),
+    criar: (crianca: Omit<Crianca, "id">) =>
+        api.post<Crianca>("/criancas", crianca),
     atualizar: (id: number, crianca: Partial<Crianca>) =>
         api.put<Crianca>(`/criancas/${id}`, crianca),
     deletar: (id: number) => api.delete(`/criancas/${id}`),
@@ -48,9 +57,9 @@ export const criancasAPI = {
 
 // APIs de Cultos
 export const cultosAPI = {
-    listar: () => api.get<Culto[]>('/cultos'),
+    listar: () => api.get<Culto[]>("/cultos"),
     obter: (id: number) => api.get<Culto>(`/cultos/${id}`),
-    criar: (culto: Omit<Culto, 'id'>) => api.post<Culto>('/cultos', culto),
+    criar: (culto: Omit<Culto, "id">) => api.post<Culto>("/cultos", culto),
     atualizar: (id: number, culto: Partial<Culto>) =>
         api.put<Culto>(`/cultos/${id}`, culto),
     deletar: (id: number) => api.delete(`/cultos/${id}`),
@@ -60,11 +69,15 @@ export const cultosAPI = {
         api.delete(`/cultos/${cultoId}/criancas/${criancaId}`),
     listarCriancas: (cultoId: number) =>
         api.get<Crianca[]>(`/cultos/${cultoId}/criancas`),
+    marcarCheckout: (cultoId: number, criancaId: number, checkedOut: boolean) =>
+        api.patch(`/cultos/${cultoId}/criancas/${criancaId}/checkout`, {
+            checkedOut,
+        }),
 };
 
 // APIs de Estatísticas
 export const estatisticasAPI = {
-    obter: () => api.get<Estatisticas>('/estatisticas'),
+    obter: () => api.get<Estatisticas>("/estatisticas"),
 };
 
 export default api;

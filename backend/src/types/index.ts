@@ -1,9 +1,15 @@
 export interface Crianca {
     id?: number;
     nome: string;
-    idade: number;
+    dataNascimento: string;
     responsavel: string;
     telefone: string;
+    restricaoAlimentar?: boolean;
+    descricaoRestricaoAlimentar?: string | null;
+    necessidadeEspecial?: boolean;
+    descricaoNecessidadeEspecial?: string | null;
+    autorizaUsoImagem?: boolean;
+    autorizaTrocaFralda?: boolean;
     createdAt?: string;
     updatedAt?: string;
 }

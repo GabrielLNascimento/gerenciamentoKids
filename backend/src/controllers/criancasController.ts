@@ -4,17 +4,44 @@ import { Crianca } from '../types';
 
 export const criarCrianca = async (req: Request, res: Response) => {
     try {
-        const { nome, idade, responsavel, telefone } = req.body;
+        const {
+            nome,
+            dataNascimento,
+            responsavel,
+            telefone,
+            restricaoAlimentar = false,
+            descricaoRestricaoAlimentar = null,
+            necessidadeEspecial = false,
+            descricaoNecessidadeEspecial = null,
+            autorizaUsoImagem = false,
+            autorizaTrocaFralda = false,
+        } = req.body;
 
-        if (!nome || !idade || !responsavel || !telefone) {
+        if (!nome || !dataNascimento || !responsavel || !telefone) {
             return res
                 .status(400)
-                .json({ error: 'Todos os campos são obrigatórios' });
+                .json({ error: 'Nome, data de nascimento, responsável e telefone são obrigatórios' });
         }
 
         const result = await dbRun(
-            'INSERT INTO criancas (nome, idade, responsavel, telefone) VALUES ($1, $2, $3, $4) RETURNING id',
-            [nome, idade, responsavel, telefone]
+            `INSERT INTO criancas (
+                nome, "dataNascimento", responsavel, telefone,
+                "restricaoAlimentar", "descricaoRestricaoAlimentar",
+                "necessidadeEspecial", "descricaoNecessidadeEspecial",
+                "autorizaUsoImagem", "autorizaTrocaFralda"
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+            [
+                nome,
+                dataNascimento,
+                responsavel,
+                telefone,
+                Boolean(restricaoAlimentar),
+                restricaoAlimentar ? descricaoRestricaoAlimentar : null,
+                Boolean(necessidadeEspecial),
+                necessidadeEspecial ? descricaoNecessidadeEspecial : null,
+                Boolean(autorizaUsoImagem),
+                Boolean(autorizaTrocaFralda),
+            ]
         );
 
         const crianca = await dbGet<Crianca>(
@@ -82,17 +109,46 @@ export const obterCrianca = async (req: Request, res: Response) => {
 export const atualizarCrianca = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { nome, idade, responsavel, telefone } = req.body;
+        const {
+            nome,
+            dataNascimento,
+            responsavel,
+            telefone,
+            restricaoAlimentar = false,
+            descricaoRestricaoAlimentar = null,
+            necessidadeEspecial = false,
+            descricaoNecessidadeEspecial = null,
+            autorizaUsoImagem = false,
+            autorizaTrocaFralda = false,
+        } = req.body;
 
-        if (!nome || !idade || !responsavel || !telefone) {
+        if (!nome || !dataNascimento || !responsavel || !telefone) {
             return res
                 .status(400)
-                .json({ error: 'Todos os campos são obrigatórios' });
+                .json({ error: 'Nome, data de nascimento, responsável e telefone são obrigatórios' });
         }
 
         await dbRun(
-            'UPDATE criancas SET nome = $1, idade = $2, responsavel = $3, telefone = $4, "updatedAt" = CURRENT_TIMESTAMP WHERE id = $5',
-            [nome, idade, responsavel, telefone, id]
+            `UPDATE criancas SET
+                nome = $1, "dataNascimento" = $2, responsavel = $3, telefone = $4,
+                "restricaoAlimentar" = $5, "descricaoRestricaoAlimentar" = $6,
+                "necessidadeEspecial" = $7, "descricaoNecessidadeEspecial" = $8,
+                "autorizaUsoImagem" = $9, "autorizaTrocaFralda" = $10,
+                "updatedAt" = CURRENT_TIMESTAMP
+            WHERE id = $11`,
+            [
+                nome,
+                dataNascimento,
+                responsavel,
+                telefone,
+                Boolean(restricaoAlimentar),
+                restricaoAlimentar ? descricaoRestricaoAlimentar : null,
+                Boolean(necessidadeEspecial),
+                necessidadeEspecial ? descricaoNecessidadeEspecial : null,
+                Boolean(autorizaUsoImagem),
+                Boolean(autorizaTrocaFralda),
+                id,
+            ]
         );
 
         const crianca = await dbGet<Crianca>(

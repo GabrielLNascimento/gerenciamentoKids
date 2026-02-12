@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
     criarCrianca,
     listarCriancas,
@@ -6,15 +6,15 @@ import {
     obterCrianca,
     atualizarCrianca,
     deletarCrianca,
-} from '../controllers/criancasController';
+} from "../controllers/criancasController";
 
 const router = Router();
 
-router.post('/', criarCrianca);
-router.get('/', listarCriancas);
-router.get('/buscar', buscarCriancasPorNome);
-router.get('/:id', obterCrianca);
-router.put('/:id', atualizarCrianca);
-router.delete('/:id', deletarCrianca);
+router.post("/", criarCrianca);
+router.get("/buscar", buscarCriancasPorNome);
+router.get("/", listarCriancas);
+router.get("/:id", obterCrianca);
+router.put("/:id", atualizarCrianca);
+router.delete("/:id", deletarCrianca);
 
 export default router;
