@@ -44,7 +44,7 @@ const CultoForm = ({ culto, onSubmit, onCancel }: CultoFormProps) => {
     <form onSubmit={handleSubmit} className="space-y-4 animate-slide-up">
       <div>
         <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
-          Nome do Culto *
+          Nome do Evento *
         </label>
         <input
           type="text"

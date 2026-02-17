@@ -122,7 +122,7 @@ const CultoDetalhesPage = () => {
         return (
             <div className="px-4 sm:px-6 lg:px-8">
                 <div className="text-center py-8 text-red-600">
-                    Culto não encontrado
+                    Evento não encontrado
                 </div>
             </div>
         );

@@ -65,10 +65,10 @@ const CriarCultoPage = () => {
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {id && id !== 'novo' ? 'Editar Culto' : 'Novo Culto'}
+          {id && id !== 'novo' ? 'Editar Evento' : 'Novo Evento'}
         </h1>
         <p className="text-gray-600">
-          {id && id !== 'novo' ? 'Atualize as informações do culto' : 'Preencha os dados do novo culto'}
+          {id && id !== 'novo' ? 'Atualize as informações do evento' : 'Preencha os dados do novo evento'}
         </p>
       </div>
 

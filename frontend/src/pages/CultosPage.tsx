@@ -48,11 +48,11 @@ const CultosPage = () => {
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Gerenciamento de Cultos</h1>
-          <p className="text-gray-600">Visualize e gerencie os cultos cadastrados</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Gerenciamento de Eventos</h1>
+          <p className="text-gray-600">Visualize e gerencie os eventos cadastrados</p>
         </div>
         <button onClick={() => navigate('/cultos/novo')} className="btn-primary">
-          + Novo Culto
+          + Novo Evento
         </button>
       </div>
 

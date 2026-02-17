@@ -19,10 +19,10 @@ const Dashboard = () => {
               Gerenciar Crianças
             </Link>
             <Link to="/cultos/novo" className="block btn-primary text-center">
-              Criar Novo Culto
+              Criar Novo Evento
             </Link>
             <Link to="/cultos" className="block btn-secondary text-center">
-              Ver Todos os Cultos
+              Ver Todos os Eventos
             </Link>
           </div>
         </div>
@@ -30,7 +30,7 @@ const Dashboard = () => {
         <div className="card">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Sobre o Sistema</h2>
           <p className="text-gray-600">
-            Sistema de gerenciamento para controle de crianças e presença em cultos.
+            Sistema de gerenciamento para controle de crianças e presença em eventos.
             Use o menu acima para navegar entre as diferentes funcionalidades.
           </p>
         </div>

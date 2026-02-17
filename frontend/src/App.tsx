@@ -38,7 +38,7 @@ function App() {
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                   <NavLink to="/">Dashboard</NavLink>
                   <NavLink to="/criancas">Crianças</NavLink>
-                  <NavLink to="/cultos">Cultos</NavLink>
+                  <NavLink to="/cultos">Eventos</NavLink>
                 </div>
               </div>
             </div>
