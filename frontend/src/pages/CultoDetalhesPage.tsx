@@ -130,6 +130,7 @@ const CultoDetalhesPage = () => {
         const background = tipo === 'filho' ? 'white' : '#f9f9f9';
         const nomeFontSize = tipo === 'filho' ? '26px' : '18px';
         const codigoFontSize = tipo === 'filho' ? '26px' : '48px';
+        const temEtiqueta = tipo === "filho" ? true : false 
 
         // Monta os ícones conforme os atributos da criança
         const autorizaImagem = crianca.autorizaUsoImagem
@@ -176,7 +177,7 @@ const CultoDetalhesPage = () => {
                 <span class="codigo">${codigoPadded}</span>
                 <span class="nome">${nomePrincipal}</span>
                 <span class="info">${nomeSecundario}</span>
-                ${icones ? `<div class="icones">${icones}</div>` : ''}
+                ${temEtiqueta ? `<div class="icones">${icones}</div>` : ''}
             </div>
         </body>
         </html>`;
