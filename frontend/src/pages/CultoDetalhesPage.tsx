@@ -123,10 +123,7 @@ const CultoDetalhesPage = () => {
             : '';
         const temCodigo = tipo === 'filho' ? 'none' : 'block';
         const nomePrincipal = tipo === 'filho' ? crianca.nome : '';
-        const nomeSecundario =
-            tipo === 'filho'
-                ? ""
-                : crianca.nome;
+        const nomeSecundario = tipo === 'filho' ? '' : crianca.nome;
         const titulo =
             tipo === 'filho' ? 'Etiqueta Criança' : 'Etiqueta Responsável';
         const borda = tipo === 'filho' ? '2px solid black' : '2px dashed black';
@@ -135,9 +132,12 @@ const CultoDetalhesPage = () => {
         const codigoFontSize = tipo === 'filho' ? '26px' : '48px';
 
         // Monta os ícones conforme os atributos da criança
+        const autorizaImagem = crianca.autorizaUsoImagem
+            ? 'camera.png'
+            : 'camera-proibido.png';
+
         const icones = [
-            crianca.autorizaUsoImagem &&
-                `<span title="Autoriza uso de imagem">🎦</span>`,
+            `<img src="${window.location.origin}/icones/${autorizaImagem}" title="Autoriza uso de imagem" style="width:48px;height:48px;object-fit:contain;" />`,
             crianca.autorizaTrocaFralda &&
                 `<span title="Autoriza troca de fralda">🚼</span>`,
             crianca.restricaoAlimentar &&
