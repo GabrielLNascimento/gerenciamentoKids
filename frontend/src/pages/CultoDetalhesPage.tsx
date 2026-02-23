@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Culto, Crianca, cultosAPI } from "../services/api";
-import CriancaSeletor from "../components/CriancaSeletor";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Culto, Crianca, cultosAPI } from '../services/api';
+import CriancaSeletor from '../components/CriancaSeletor';
 
 const calcularIdade = (dataNascimento: string): number => {
     const hoje = new Date();
@@ -24,7 +24,7 @@ const CultoDetalhesPage = () => {
     const [culto, setCulto] = useState<Culto | null>(null);
     const [criancas, setCriancas] = useState<Crianca[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filtro, setFiltro] = useState("");
+    const [filtro, setFiltro] = useState('');
     const [mostrarCheckout, setMostrarCheckout] = useState(true);
     const [mostrarPendente, setMostrarPendente] = useState(true);
 
@@ -48,7 +48,7 @@ const CultoDetalhesPage = () => {
                 setLoading(false);
             })
             .catch((error) => {
-                console.error("Erro ao carregar dados:", error);
+                console.error('Erro ao carregar dados:', error);
                 setLoading(false);
             });
     };
@@ -60,7 +60,9 @@ const CultoDetalhesPage = () => {
             ? String(crianca.codigo).includes(termo)
             : false;
 
-        const statusMatch = (crianca.checkedOut && mostrarCheckout) || (!crianca.checkedOut && mostrarPendente);
+        const statusMatch =
+            (crianca.checkedOut && mostrarCheckout) ||
+            (!crianca.checkedOut && mostrarPendente);
 
         return (nomeMatch || codigoMatch) && statusMatch;
     });
@@ -74,8 +76,8 @@ const CultoDetalhesPage = () => {
                 carregarDados();
             })
             .catch((error) => {
-                console.error("Erro ao adicionar criança:", error);
-                alert("Erro ao adicionar criança ao culto");
+                console.error('Erro ao adicionar criança:', error);
+                alert('Erro ao adicionar criança ao culto');
             });
     };
 
@@ -84,7 +86,7 @@ const CultoDetalhesPage = () => {
 
         if (
             window.confirm(
-                "Tem certeza que deseja remover esta criança do culto?",
+                'Tem certeza que deseja remover esta criança do culto?',
             )
         ) {
             cultosAPI
@@ -93,8 +95,8 @@ const CultoDetalhesPage = () => {
                     carregarDados();
                 })
                 .catch((error) => {
-                    console.error("Erro ao remover criança:", error);
-                    alert("Erro ao remover criança do culto");
+                    console.error('Erro ao remover criança:', error);
+                    alert('Erro ao remover criança do culto');
                 });
         }
     };
@@ -109,19 +111,101 @@ const CultoDetalhesPage = () => {
                 carregarDados();
             })
             .catch((error) => {
-                console.error("Erro ao marcar checkout:", error);
-                alert("Erro ao marcar checkout");
+                console.error('Erro ao marcar checkout:', error);
+                alert('Erro ao marcar checkout');
             });
     };
 
+    const handleGerarEtiqueta = (crianca: Crianca, tipo: 'filho' | 'pai') => {
+        // const idade = calcularIdade(crianca.dataNascimento);
+        const codigoPadded = crianca.codigo
+            ? String(crianca.codigo).padStart(2, '0')
+            : '';
+        const temCodigo = tipo === 'filho' ? 'none' : 'block';
+        const nomePrincipal = tipo === 'filho' ? crianca.nome : '';
+        const nomeSecundario =
+            tipo === 'filho'
+                ? ""
+                : crianca.nome;
+        const titulo =
+            tipo === 'filho' ? 'Etiqueta Criança' : 'Etiqueta Responsável';
+        const borda = tipo === 'filho' ? '2px solid black' : '2px dashed black';
+        const background = tipo === 'filho' ? 'white' : '#f9f9f9';
+        const nomeFontSize = tipo === 'filho' ? '26px' : '18px';
+        const codigoFontSize = tipo === 'filho' ? '26px' : '48px';
+
+        // Monta os ícones conforme os atributos da criança
+        const icones = [
+            crianca.autorizaUsoImagem &&
+                `<span title="Autoriza uso de imagem">🎦</span>`,
+            crianca.autorizaTrocaFralda &&
+                `<span title="Autoriza troca de fralda">🚼</span>`,
+            crianca.restricaoAlimentar &&
+                `<span title="Restrição alimentar: ${crianca.descricaoRestricaoAlimentar || 'Sim'}">🚰</span>`,
+            crianca.necessidadeEspecial &&
+                `<span title="Necessidade especial: ${crianca.descricaoNecessidadeEspecial || 'Sim'}">♿</span>`,
+        ]
+            .filter(Boolean)
+            .join('');
+
+        const etiquetaHTML = `
+        <html>
+        <head>
+            <title>${titulo} - ${nomePrincipal}</title>
+            <style>
+                @page { size: 300px 150px; margin: 0; }
+                body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; width: 300px; height: 150px; }
+                .etiqueta {
+                    width: 290px; height: 140px;
+                    display: flex; justify-content: center; align-items: center; flex-direction: column;
+                    border: ${borda}; border-radius: 8px;
+                    gap: 4px; padding: 8px; box-sizing: border-box;
+                    background: ${background};
+                }
+                .titulo { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #777; }
+                .codigo { font-size: ${codigoFontSize}; font-weight: 900; line-height: 1; display: ${temCodigo}; }
+                .nome { font-size: ${nomeFontSize}; font-weight: bold; text-align: center; }
+                .info { font-size: 12px; color: #555; text-align: center; }
+                .icones { display: flex; gap: 6px; font-size: 40px; margin-top: 2px; }
+                @media print { body { margin: 0; } }
+            </style>
+        </head>
+        <body>
+            <div class="etiqueta">
+                <span class="titulo">${titulo}</span>
+                <span class="codigo">${codigoPadded}</span>
+                <span class="nome">${nomePrincipal}</span>
+                <span class="info">${nomeSecundario}</span>
+                ${icones ? `<div class="icones">${icones}</div>` : ''}
+            </div>
+        </body>
+        </html>`;
+
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) return;
+
+        printWindow.document.write(etiquetaHTML);
+        printWindow.document.close();
+        printWindow.focus();
+
+        setTimeout(() => {
+            printWindow.print();
+            const onFocus = () => {
+                window.removeEventListener('focus', onFocus);
+                printWindow.close();
+            };
+            window.addEventListener('focus', onFocus);
+        }, 300);
+    };
+
     const formatarData = (data: string) => {
-        const [year, month, day] = data.split("-").map(Number);
+        const [year, month, day] = data.split('-').map(Number);
         const date = new Date(year, month - 1, day);
-        return date.toLocaleDateString("pt-BR", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
+        return date.toLocaleDateString('pt-BR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
         });
     };
 
@@ -147,7 +231,7 @@ const CultoDetalhesPage = () => {
         <div className="px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
                 <button
-                    onClick={() => navigate("/cultos")}
+                    onClick={() => navigate('/cultos')}
                     className="btn-secondary mb-4"
                 >
                     ← Voltar
@@ -187,7 +271,9 @@ const CultoDetalhesPage = () => {
                                 <input
                                     type="checkbox"
                                     checked={mostrarPendente}
-                                    onChange={(e) => setMostrarPendente(e.target.checked)}
+                                    onChange={(e) =>
+                                        setMostrarPendente(e.target.checked)
+                                    }
                                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 />
                                 Pendente
@@ -196,7 +282,9 @@ const CultoDetalhesPage = () => {
                                 <input
                                     type="checkbox"
                                     checked={mostrarCheckout}
-                                    onChange={(e) => setMostrarCheckout(e.target.checked)}
+                                    onChange={(e) =>
+                                        setMostrarCheckout(e.target.checked)
+                                    }
                                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 />
                                 Realizado
@@ -209,44 +297,73 @@ const CultoDetalhesPage = () => {
                     {criancasFiltradas.length === 0 ? (
                         <div className="text-center py-8 text-gray-500">
                             {filtro
-                                ? "Nenhuma criança encontrada para esta busca."
-                                : "Nenhuma criança adicionada ainda."}
+                                ? 'Nenhuma criança encontrada para esta busca.'
+                                : 'Nenhuma criança adicionada ainda.'}
                         </div>
                     ) : (
                         <div className="space-y-2">
                             {criancasFiltradas.map((crianca) => (
                                 <div
                                     key={crianca.id}
-                                    className={`flex items-center justify-between p-3 rounded-lg transition-colors ${crianca.checkedOut
-                                        ? "bg-gray-200"
-                                        : "bg-gray-50 hover:bg-gray-100"
-                                        }`}
+                                    className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                                        crianca.checkedOut
+                                            ? 'bg-gray-200'
+                                            : 'bg-gray-50 hover:bg-gray-100'
+                                    }`}
                                 >
                                     <div className="flex-1 flex gap-6 flex-col ">
-
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() =>
-                                                    handleMarcarCheckout(crianca)
+                                                    handleMarcarCheckout(
+                                                        crianca,
+                                                    )
                                                 }
-                                                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${crianca.checkedOut
-                                                    ? "bg-gray-500 hover:bg-gray-600 text-white"
-                                                    : "bg-blue-500 hover:bg-blue-600 text-white"
-                                                    }`}
+                                                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                                                    crianca.checkedOut
+                                                        ? 'bg-gray-500 hover:bg-gray-600 text-white'
+                                                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                                }`}
                                             >
                                                 {crianca.checkedOut
-                                                    ? "✓ Checkout"
-                                                    : "Checkout"}
+                                                    ? '✓ Checkout'
+                                                    : 'Checkout'}
+                                            </button>
+
+                                            <button
+                                                onClick={() =>
+                                                    handleGerarEtiqueta(
+                                                        crianca,
+                                                        'filho',
+                                                    )
+                                                }
+                                                className="px-3 py-1 rounded text-sm font-medium bg-green-500 hover:bg-green-600 text-white transition-colors"
+                                            >
+                                                Etiqueta Filho
                                             </button>
                                             <button
                                                 onClick={() =>
+                                                    handleGerarEtiqueta(
+                                                        crianca,
+                                                        'pai',
+                                                    )
+                                                }
+                                                className="px-3 py-1 rounded text-sm font-medium bg-yellow-500 hover:bg-yellow-600 text-white transition-colors"
+                                            >
+                                                Etiqueta Pai
+                                            </button>
+
+                                            <button
+                                                onClick={() =>
                                                     crianca.id &&
-                                                    handleRemoverCrianca(crianca.id)
+                                                    handleRemoverCrianca(
+                                                        crianca.id,
+                                                    )
                                                 }
                                                 className={
                                                     crianca.checkedOut
-                                                        ? "text-gray-600 line-through text-sm font-medium"
-                                                        : "text-red-600 hover:text-red-800 text-sm font-medium"
+                                                        ? 'text-gray-600 line-through text-sm font-medium'
+                                                        : 'text-red-600 hover:text-red-800 text-sm font-medium'
                                                 }
                                                 disabled={crianca.checkedOut}
                                             >
@@ -256,69 +373,70 @@ const CultoDetalhesPage = () => {
 
                                         <div>
                                             <p
-                                                className={`font-medium ${crianca.checkedOut
-                                                    ? "line-through text-gray-500"
-                                                    : "text-gray-900"
-                                                    }`}
+                                                className={`font-medium ${
+                                                    crianca.checkedOut
+                                                        ? 'line-through text-gray-500'
+                                                        : 'text-gray-900'
+                                                }`}
                                             >
                                                 {crianca.codigo
                                                     ? `${String(
-                                                        crianca.codigo,
-                                                    ).padStart(
-                                                        2,
-                                                        "0",
-                                                    )} - ${crianca.nome} - ${calcularIdade(
-                                                        crianca.dataNascimento,
-                                                    )} anos`
+                                                          crianca.codigo,
+                                                      ).padStart(
+                                                          2,
+                                                          '0',
+                                                      )} - ${crianca.nome} - ${calcularIdade(
+                                                          crianca.dataNascimento,
+                                                      )} anos`
                                                     : crianca.nome}
                                             </p>
                                             <p className="text-sm text-gray-500">
                                                 {new Date(
                                                     crianca.dataNascimento,
-                                                ).toLocaleDateString("pt-BR")}{" "}
+                                                ).toLocaleDateString(
+                                                    'pt-BR',
+                                                )}{' '}
                                                 • {crianca.responsavel}
                                             </p>
                                             <div className="text-sm text-gray-600 mt-1 ml-0">
                                                 <div>
                                                     <strong>
                                                         Restrição Alimentar:
-                                                    </strong>{" "}
+                                                    </strong>{' '}
                                                     {crianca.restricaoAlimentar
                                                         ? crianca.descricaoRestricaoAlimentar ||
-                                                        "Sim"
-                                                        : "Não"}
+                                                          'Sim'
+                                                        : 'Não'}
                                                 </div>
                                                 <div>
                                                     <strong>
                                                         Necessidade Especial:
-                                                    </strong>{" "}
+                                                    </strong>{' '}
                                                     {crianca.necessidadeEspecial
                                                         ? crianca.descricaoNecessidadeEspecial ||
-                                                        "Sim"
-                                                        : "Não"}
+                                                          'Sim'
+                                                        : 'Não'}
                                                 </div>
                                                 <div>
                                                     <strong>
                                                         Autoriza uso de imagem:
-                                                    </strong>{" "}
+                                                    </strong>{' '}
                                                     {crianca.autorizaUsoImagem
-                                                        ? "Sim"
-                                                        : "Não"}
+                                                        ? 'Sim'
+                                                        : 'Não'}
                                                 </div>
                                                 <div>
                                                     <strong>
-                                                        Autoriza troca de fralda:
-                                                    </strong>{" "}
+                                                        Autoriza troca de
+                                                        fralda:
+                                                    </strong>{' '}
                                                     {crianca.autorizaTrocaFralda
-                                                        ? "Sim"
-                                                        : "Não"}
+                                                        ? 'Sim'
+                                                        : 'Não'}
                                                 </div>
                                             </div>
-
                                         </div>
-
                                     </div>
-
                                 </div>
                             ))}
                         </div>
