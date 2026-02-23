@@ -65,7 +65,7 @@ const CultoDetalhesPage = () => {
             (!crianca.checkedOut && mostrarPendente);
 
         return (nomeMatch || codigoMatch) && statusMatch;
-    });
+    }).reverse();
 
     const handleAdicionarCrianca = (criancaId: number) => {
         if (!id) return;
