@@ -305,7 +305,7 @@ const CultoDetalhesPage = () => {
                             {criancasFiltradas.map((crianca) => (
                                 <div
                                     key={crianca.id}
-                                    className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                                    className={`flex items-center justify-between p-3 rounded-lg transition-colors border border-gray-400 ${
                                         crianca.checkedOut
                                             ? 'bg-gray-200'
                                             : 'bg-gray-50 hover:bg-gray-100'
