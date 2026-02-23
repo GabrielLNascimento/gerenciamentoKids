@@ -24,6 +24,9 @@ const CultoDetalhesPage = () => {
     const [culto, setCulto] = useState<Culto | null>(null);
     const [criancas, setCriancas] = useState<Crianca[]>([]);
     const [loading, setLoading] = useState(true);
+    const [filtro, setFiltro] = useState("");
+    const [mostrarCheckout, setMostrarCheckout] = useState(true);
+    const [mostrarPendente, setMostrarPendente] = useState(true);
 
     useEffect(() => {
         if (id) {
@@ -49,6 +52,18 @@ const CultoDetalhesPage = () => {
                 setLoading(false);
             });
     };
+
+    const criancasFiltradas = criancas.filter((crianca) => {
+        const termo = filtro.toLowerCase();
+        const nomeMatch = crianca.nome.toLowerCase().includes(termo);
+        const codigoMatch = crianca.codigo
+            ? String(crianca.codigo).includes(termo)
+            : false;
+
+        const statusMatch = (crianca.checkedOut && mostrarCheckout) || (!crianca.checkedOut && mostrarPendente);
+
+        return (nomeMatch || codigoMatch) && statusMatch;
+    });
 
     const handleAdicionarCrianca = (criancaId: number) => {
         if (!id) return;
@@ -152,118 +167,158 @@ const CultoDetalhesPage = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="card">
+                    <div className="mb-4">
+                        <label
+                            htmlFor="search"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                            Pesquisar Criança (Nome ou Código)
+                        </label>
+                        <input
+                            type="text"
+                            id="search"
+                            className="input-field"
+                            placeholder="Ex: Fulano ou 1"
+                            value={filtro}
+                            onChange={(e) => setFiltro(e.target.value)}
+                        />
+                        <div className="flex gap-4 mt-2">
+                            <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input
+                                    type="checkbox"
+                                    checked={mostrarPendente}
+                                    onChange={(e) => setMostrarPendente(e.target.checked)}
+                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                Pendente
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+                                <input
+                                    type="checkbox"
+                                    checked={mostrarCheckout}
+                                    onChange={(e) => setMostrarCheckout(e.target.checked)}
+                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                />
+                                Realizado
+                            </label>
+                        </div>
+                    </div>
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                        Crianças Presentes ({criancas.length})
+                        Crianças Presentes ({criancasFiltradas.length})
                     </h2>
-                    {criancas.length === 0 ? (
+                    {criancasFiltradas.length === 0 ? (
                         <div className="text-center py-8 text-gray-500">
-                            Nenhuma criança adicionada ainda.
+                            {filtro
+                                ? "Nenhuma criança encontrada para esta busca."
+                                : "Nenhuma criança adicionada ainda."}
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            {criancas.map((crianca) => (
+                            {criancasFiltradas.map((crianca) => (
                                 <div
                                     key={crianca.id}
-                                    className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                                        crianca.checkedOut
-                                            ? "bg-gray-200"
-                                            : "bg-gray-50 hover:bg-gray-100"
-                                    }`}
+                                    className={`flex items-center justify-between p-3 rounded-lg transition-colors ${crianca.checkedOut
+                                        ? "bg-gray-200"
+                                        : "bg-gray-50 hover:bg-gray-100"
+                                        }`}
                                 >
-                                    <div className="flex-1">
-                                        <p
-                                            className={`font-medium ${
-                                                crianca.checkedOut
-                                                    ? "line-through text-gray-500"
-                                                    : "text-gray-900"
-                                            }`}
-                                        >
-                                            {crianca.codigo
-                                                ? `${String(
-                                                      crianca.codigo,
-                                                  ).padStart(
-                                                      2,
-                                                      "0",
-                                                  )} - ${crianca.nome}`
-                                                : crianca.nome}
-                                        </p>
-                                        <p className="text-sm text-gray-500">
-                                            {new Date(
-                                                crianca.dataNascimento,
-                                            ).toLocaleDateString("pt-BR")}{" "}
-                                            (
-                                            {calcularIdade(
-                                                crianca.dataNascimento,
-                                            )}{" "}
-                                            anos) • {crianca.responsavel}
-                                        </p>
-                                        <div className="text-sm text-gray-600 mt-1 ml-0">
-                                            <div>
-                                                <strong>
-                                                    Restrição Alimentar:
-                                                </strong>{" "}
-                                                {crianca.restricaoAlimentar
-                                                    ? crianca.descricaoRestricaoAlimentar ||
-                                                      "Sim"
-                                                    : "Não"}
-                                            </div>
-                                            <div>
-                                                <strong>
-                                                    Necessidade Especial:
-                                                </strong>{" "}
-                                                {crianca.necessidadeEspecial
-                                                    ? crianca.descricaoNecessidadeEspecial ||
-                                                      "Sim"
-                                                    : "Não"}
-                                            </div>
-                                            <div>
-                                                <strong>
-                                                    Autoriza uso de imagem:
-                                                </strong>{" "}
-                                                {crianca.autorizaUsoImagem
-                                                    ? "Sim"
-                                                    : "Não"}
-                                            </div>
-                                            <div>
-                                                <strong>
-                                                    Autoriza troca de fralda:
-                                                </strong>{" "}
-                                                {crianca.autorizaTrocaFralda
-                                                    ? "Sim"
-                                                    : "Não"}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() =>
-                                                handleMarcarCheckout(crianca)
-                                            }
-                                            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                                                crianca.checkedOut
+                                    <div className="flex-1 flex gap-6 flex-col ">
+
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() =>
+                                                    handleMarcarCheckout(crianca)
+                                                }
+                                                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${crianca.checkedOut
                                                     ? "bg-gray-500 hover:bg-gray-600 text-white"
                                                     : "bg-blue-500 hover:bg-blue-600 text-white"
-                                            }`}
-                                        >
-                                            {crianca.checkedOut
-                                                ? "✓ Checkout"
-                                                : "Checkout"}
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                crianca.id &&
-                                                handleRemoverCrianca(crianca.id)
-                                            }
-                                            className={
-                                                crianca.checkedOut
-                                                    ? "text-gray-600 line-through text-sm font-medium"
-                                                    : "text-red-600 hover:text-red-800 text-sm font-medium"
-                                            }
-                                            disabled={crianca.checkedOut}
-                                        >
-                                            Remover
-                                        </button>
+                                                    }`}
+                                            >
+                                                {crianca.checkedOut
+                                                    ? "✓ Checkout"
+                                                    : "Checkout"}
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    crianca.id &&
+                                                    handleRemoverCrianca(crianca.id)
+                                                }
+                                                className={
+                                                    crianca.checkedOut
+                                                        ? "text-gray-600 line-through text-sm font-medium"
+                                                        : "text-red-600 hover:text-red-800 text-sm font-medium"
+                                                }
+                                                disabled={crianca.checkedOut}
+                                            >
+                                                Remover
+                                            </button>
+                                        </div>
+
+                                        <div>
+                                            <p
+                                                className={`font-medium ${crianca.checkedOut
+                                                    ? "line-through text-gray-500"
+                                                    : "text-gray-900"
+                                                    }`}
+                                            >
+                                                {crianca.codigo
+                                                    ? `${String(
+                                                        crianca.codigo,
+                                                    ).padStart(
+                                                        2,
+                                                        "0",
+                                                    )} - ${crianca.nome} - ${calcularIdade(
+                                                        crianca.dataNascimento,
+                                                    )} anos`
+                                                    : crianca.nome}
+                                            </p>
+                                            <p className="text-sm text-gray-500">
+                                                {new Date(
+                                                    crianca.dataNascimento,
+                                                ).toLocaleDateString("pt-BR")}{" "}
+                                                • {crianca.responsavel}
+                                            </p>
+                                            <div className="text-sm text-gray-600 mt-1 ml-0">
+                                                <div>
+                                                    <strong>
+                                                        Restrição Alimentar:
+                                                    </strong>{" "}
+                                                    {crianca.restricaoAlimentar
+                                                        ? crianca.descricaoRestricaoAlimentar ||
+                                                        "Sim"
+                                                        : "Não"}
+                                                </div>
+                                                <div>
+                                                    <strong>
+                                                        Necessidade Especial:
+                                                    </strong>{" "}
+                                                    {crianca.necessidadeEspecial
+                                                        ? crianca.descricaoNecessidadeEspecial ||
+                                                        "Sim"
+                                                        : "Não"}
+                                                </div>
+                                                <div>
+                                                    <strong>
+                                                        Autoriza uso de imagem:
+                                                    </strong>{" "}
+                                                    {crianca.autorizaUsoImagem
+                                                        ? "Sim"
+                                                        : "Não"}
+                                                </div>
+                                                <div>
+                                                    <strong>
+                                                        Autoriza troca de fralda:
+                                                    </strong>{" "}
+                                                    {crianca.autorizaTrocaFralda
+                                                        ? "Sim"
+                                                        : "Não"}
+                                                </div>
+                                            </div>
+
+                                        </div>
+
                                     </div>
+
                                 </div>
                             ))}
                         </div>
