@@ -121,7 +121,7 @@ const CultoDetalhesPage = () => {
         const codigoPadded = crianca.codigo
             ? String(crianca.codigo).padStart(2, '0')
             : '';
-        const temCodigo = tipo === 'filho' ? 'none' : 'block';
+        const temCodigo = tipo === 'filho' ? 'block' : 'block';
         const nomePrincipal = tipo === 'filho' ? crianca.nome : '';
         const nomeSecundario = tipo === 'filho' ? '' : crianca.nome;
         const titulo =
@@ -134,17 +134,17 @@ const CultoDetalhesPage = () => {
 
         // Monta os ícones conforme os atributos da criança
         const autorizaImagem = crianca.autorizaUsoImagem
-            ? 'camera.png'
+            ? ''
             : 'camera-proibido.png';
 
         const icones = [
-            `<img src="${window.location.origin}/icones/${autorizaImagem}" title="Autoriza uso de imagem" style="width:48px;height:48px;object-fit:contain;" />`,
+            !crianca.autorizaUsoImagem && `<img alt="" src="${window.location.origin}/icones/${autorizaImagem}" title="Autoriza uso de imagem" style="width:48px;height:48px;object-fit:contain;" />`,
             crianca.autorizaTrocaFralda &&
                 `<span title="Autoriza troca de fralda">🚼</span>`,
             crianca.restricaoAlimentar &&
-                `<span title="Restrição alimentar: ${crianca.descricaoRestricaoAlimentar || 'Sim'}">🚰</span>`,
+                `<span title="Restrição alimentar: ${crianca.descricaoRestricaoAlimentar || 'Sim'}">🍽️</span>`,
             crianca.necessidadeEspecial &&
-                `<span title="Necessidade especial: ${crianca.descricaoNecessidadeEspecial || 'Sim'}">♿</span>`,
+                `<span title="Necessidade especial: ${crianca.descricaoNecessidadeEspecial || 'Sim'}">🚹</span>`,
         ]
             .filter(Boolean)
             .join('');
@@ -157,25 +157,23 @@ const CultoDetalhesPage = () => {
                 @page { size: 300px 150px; margin: 0; }
                 body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; width: 300px; height: 150px; }
                 .etiqueta {
-                    width: 290px; height: 140px;
+                    width: 290px; height: 250px;
                     display: flex; justify-content: center; align-items: center; flex-direction: column;
                     border: ${borda}; border-radius: 8px;
-                    gap: 4px; padding: 8px; box-sizing: border-box;
+                    gap: 4px; padding: 20px; box-sizing: border-box;
                     background: ${background};
+                    
                 }
-                .titulo { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #777; }
                 .codigo { font-size: ${codigoFontSize}; font-weight: 900; line-height: 1; display: ${temCodigo}; }
                 .nome { font-size: ${nomeFontSize}; font-weight: bold; text-align: center; }
-                .info { font-size: 12px; color: #555; text-align: center; }
-                .icones { display: flex; gap: 6px; font-size: 40px; margin-top: 2px; }
+                .info { font-size: 20px; color: #555; text-align: center; }
+                .icones { display: flex; gap: 6px; font-size: 40px; margin: 2px; }
                 @media print { body { margin: 0; } }
             </style>
         </head>
         <body>
             <div class="etiqueta">
-                <span class="titulo">${titulo}</span>
-                <span class="codigo">${codigoPadded}</span>
-                <span class="nome">${nomePrincipal}</span>
+                <span class="nome">${codigoPadded} - ${nomePrincipal}</span>
                 <span class="info">${nomeSecundario}</span>
                 ${temEtiqueta ? `<div class="icones">${icones}</div>` : ''}
             </div>
