@@ -57,7 +57,7 @@ const CultoDetalhesPage = () => {
         return texto
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase();
+            .toLowerCase()
     };
 
     const criancasFiltradas = criancas
@@ -79,6 +79,8 @@ const CultoDetalhesPage = () => {
             return (nomeMatch || codigoMatch) && statusMatch;
         })
         .reverse();
+
+        const criancasPresentes = criancasFiltradas.filter((crianca) => !crianca.checkedOut).length;
 
     const handleAdicionarCrianca = (criancaId: number) => {
         if (!id) return;
@@ -305,7 +307,7 @@ const CultoDetalhesPage = () => {
                         </div>
                     </div>
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                        Crianças Presentes ({criancasFiltradas.length})
+                        Crianças Presentes ({criancasPresentes})
                     </h2>
                     {criancasFiltradas.length === 0 ? (
                         <div className="text-center py-8 text-gray-500">

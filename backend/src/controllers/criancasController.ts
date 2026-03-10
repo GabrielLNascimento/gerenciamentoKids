@@ -70,20 +70,25 @@ export const listarCriancas = async (req: Request, res: Response) => {
 export const buscarCriancasPorNome = async (req: Request, res: Response) => {
     try {
         const { nome } = req.query;
-        if (!nome || typeof nome !== 'string') {
+
+        if (!nome || typeof nome !== "string") {
             return res
                 .status(400)
-                .json({ error: 'Parâmetro nome é obrigatório' });
+                .json({ error: "Parâmetro nome é obrigatório" });
         }
-
+        
         const criancas = await dbAll<Crianca>(
-            'SELECT * FROM criancas WHERE nome ILIKE $1 ORDER BY nome',
+            `SELECT *
+             FROM criancas
+             WHERE unaccent(nome) ILIKE unaccent($1)
+             ORDER BY nome`,
             [`%${nome}%`]
         );
+
         res.json(criancas);
     } catch (error) {
-        console.error('Erro ao buscar crianças:', error);
-        res.status(500).json({ error: 'Erro ao buscar crianças' });
+        console.error("Erro ao buscar crianças:", error);
+        res.status(500).json({ error: "Erro ao buscar crianças" });
     }
 };
 
