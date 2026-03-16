@@ -1,8 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import { Crianca } from "../services/api";
 
 interface CriancasTableProps {
     criancas: Crianca[];
-    onEdit: (crianca: Crianca) => void;
     onDelete: (id: number) => void;
 }
 
@@ -21,7 +21,8 @@ const calcularIdade = (dataNascimento: string): number => {
     return idade;
 };
 
-const CriancasTable = ({ criancas, onEdit, onDelete }: CriancasTableProps) => {
+const CriancasTable = ({ criancas, onDelete }: CriancasTableProps) => {
+    const navigate = useNavigate();
     if (criancas.length === 0) {
         return (
             <div className="text-center py-8 text-gray-500">
@@ -75,7 +76,7 @@ const CriancasTable = ({ criancas, onEdit, onDelete }: CriancasTableProps) => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button
-                                    onClick={() => onEdit(crianca)}
+                                    onClick={() => navigate(`/criancas/${crianca.id}/editar`)}
                                     className="text-primary-600 hover:text-primary-900 mr-4"
                                 >
                                     Editar

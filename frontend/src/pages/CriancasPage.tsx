@@ -7,7 +7,6 @@ const CriancasPage = () => {
   const [criancas, setCriancas] = useState<Crianca[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [criancaEditando, setCriancaEditando] = useState<Crianca | undefined>();
 
   useEffect(() => {
     carregarCriancas();
@@ -40,22 +39,6 @@ const CriancasPage = () => {
       });
   };
 
-  const handleAtualizar = (crianca: Omit<Crianca, 'id'>) => {
-    if (!criancaEditando?.id) return;
-
-    criancasAPI
-      .atualizar(criancaEditando.id, crianca)
-      .then(() => {
-        carregarCriancas();
-        setShowForm(false);
-        setCriancaEditando(undefined);
-      })
-      .catch((error) => {
-        console.error('Erro ao atualizar criança:', error);
-        alert('Erro ao atualizar criança');
-      });
-  };
-
   const handleDelete = (id: number) => {
     if (window.confirm('Tem certeza que deseja excluir esta criança?')) {
       criancasAPI
@@ -70,14 +53,8 @@ const CriancasPage = () => {
     }
   };
 
-  const handleEdit = (crianca: Crianca) => {
-    setCriancaEditando(crianca);
-    setShowForm(true);
-  };
-
   const handleCancel = () => {
     setShowForm(false);
-    setCriancaEditando(undefined);
   };
 
   return (
@@ -96,12 +73,9 @@ const CriancasPage = () => {
 
       {showForm && (
         <div className="card mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            {criancaEditando ? 'Editar Criança' : 'Nova Criança'}
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Nova Criança</h2>
           <CriancaForm
-            crianca={criancaEditando}
-            onSubmit={criancaEditando ? handleAtualizar : handleCriar}
+            onSubmit={handleCriar}
             onCancel={handleCancel}
           />
         </div>
@@ -110,7 +84,7 @@ const CriancasPage = () => {
       {loading ? (
         <div className="text-center py-8">Carregando...</div>
       ) : (
-        <CriancasTable criancas={criancas} onEdit={handleEdit} onDelete={handleDelete} />
+        <CriancasTable criancas={criancas} onDelete={handleDelete} />
       )}
     </div>
   );
