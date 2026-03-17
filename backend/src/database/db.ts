@@ -55,6 +55,7 @@ export async function initTables(): Promise<void> {
                 ALTER TABLE criancas ADD COLUMN IF NOT EXISTS "descricaoNecessidadeEspecial" TEXT;
                 ALTER TABLE criancas ADD COLUMN IF NOT EXISTS "autorizaUsoImagem" BOOLEAN DEFAULT false;
                 ALTER TABLE criancas ADD COLUMN IF NOT EXISTS "autorizaTrocaFralda" BOOLEAN DEFAULT false;
+                ALTER TABLE criancas ADD COLUMN IF NOT EXISTS "relatorio" TEXT;
             END $$;
         `);
         await client.query(`

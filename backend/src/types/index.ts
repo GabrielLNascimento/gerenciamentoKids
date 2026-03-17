@@ -10,6 +10,7 @@ export interface Crianca {
     descricaoNecessidadeEspecial?: string | null;
     autorizaUsoImagem?: boolean;
     autorizaTrocaFralda?: boolean;
+    relatorio?: string | null;
     createdAt?: string;
     updatedAt?: string;
 }

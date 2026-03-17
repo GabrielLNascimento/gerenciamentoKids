@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find \"C:\\\\\\\\Users\\\\\\\\gabri\\\\\\\\Documents\\\\\\\\Programação\\\\\\\\projetos\\\\\\\\gerenciamentoKids\\\\\\\\backend\\\\\\\\src\" -type f \\\\\\( -name \"*.ts\" -o -name \"*.js\" \\\\\\) 2>/dev/null | grep -v node_modules)",
+      "Bash(find \"C:\\\\\\\\Users\\\\\\\\gabri\\\\\\\\Documents\\\\\\\\Programação\\\\\\\\projetos\\\\\\\\gerenciamentoKids\\\\\\\\backend\" -type f \\\\\\( -name \"*migration*\" -o -name \"*migrate*\" \\\\\\) 2>/dev/null | grep -v node_modules)"
+    ]
+  }
+}

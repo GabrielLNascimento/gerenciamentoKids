@@ -167,6 +167,27 @@ export const atualizarCrianca = async (req: Request, res: Response) => {
     }
 };
 
+export const atualizarRelatorio = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { relatorio = null } = req.body;
+
+        await dbRun(
+            `UPDATE criancas SET "relatorio" = $1, "updatedAt" = CURRENT_TIMESTAMP WHERE id = $2`,
+            [relatorio, id]
+        );
+
+        const crianca = await dbGet<Crianca>('SELECT * FROM criancas WHERE id = $1', [id]);
+        if (!crianca) {
+            return res.status(404).json({ error: 'Criança não encontrada' });
+        }
+        res.json(crianca);
+    } catch (error) {
+        console.error('Erro ao atualizar relatório:', error);
+        res.status(500).json({ error: 'Erro ao atualizar relatório' });
+    }
+};
+
 export const deletarCrianca = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;

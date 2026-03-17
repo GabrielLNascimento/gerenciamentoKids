@@ -5,6 +5,7 @@ import CultosPage from './pages/CultosPage';
 import CultoDetalhesPage from './pages/CultoDetalhesPage';
 import CriarCultoPage from './pages/CriarCultoPage';
 import EditarCriancaPage from './pages/EditarCriancaPage';
+import RelatorioCriancaPage from './pages/RelatorioCriancaPage';
 
 const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
   const location = useLocation();
@@ -55,6 +56,7 @@ function App() {
             <Route path="/cultos/:id" element={<CultoDetalhesPage />} />
             <Route path="/cultos/:id/editar" element={<CriarCultoPage />} />
             <Route path="/criancas/:id/editar" element={<EditarCriancaPage />} />
+            <Route path="/criancas/:id/relatorio" element={<RelatorioCriancaPage />} />
           </Routes>
         </main>
       </div>

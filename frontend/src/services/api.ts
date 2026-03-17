@@ -20,6 +20,7 @@ export interface Crianca {
     descricaoNecessidadeEspecial?: string | null;
     autorizaUsoImagem?: boolean;
     autorizaTrocaFralda?: boolean;
+    relatorio?: string | null;
     createdAt?: string;
     updatedAt?: string;
     presencaData?: string;
@@ -52,6 +53,8 @@ export const criancasAPI = {
         api.post<Crianca>("/criancas", crianca),
     atualizar: (id: number, crianca: Partial<Crianca>) =>
         api.put<Crianca>(`/criancas/${id}`, crianca),
+    atualizarRelatorio: (id: number, relatorio: string | null) =>
+        api.patch<Crianca>(`/criancas/${id}/relatorio`, { relatorio }),
     deletar: (id: number) => api.delete(`/criancas/${id}`),
 };
 

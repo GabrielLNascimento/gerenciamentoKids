@@ -76,6 +76,12 @@ const CriancasTable = ({ criancas, onDelete }: CriancasTableProps) => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button
+                                    onClick={() => navigate(`/criancas/${crianca.id}/relatorio`)}
+                                    className="text-gray-500 hover:text-gray-800 mr-4"
+                                >
+                                    Relatório
+                                </button>
+                                <button
                                     onClick={() => navigate(`/criancas/${crianca.id}/editar`)}
                                     className="text-primary-600 hover:text-primary-900 mr-4"
                                 >
