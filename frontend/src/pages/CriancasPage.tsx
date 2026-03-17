@@ -45,6 +45,7 @@ const CriancasPage = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [filtroGrupo, setFiltroGrupo] = useState<GrupoEtario>("todos");
+  const [busca, setBusca] = useState("");
 
   useEffect(() => {
     carregarCriancas();
@@ -95,14 +96,19 @@ const CriancasPage = () => {
     setShowForm(false);
   };
 
-  const criancasFiltradas =
-    filtroGrupo === "todos"
-      ? criancas
-      : criancas.filter((c) => {
-          const grupo = GRUPOS.find((g) => g.value === filtroGrupo)!;
-          const idade = calcularIdade(c.dataNascimento);
-          return idade >= grupo.min && idade <= grupo.max;
-        });
+  const normalizar = (str: string) =>
+    str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+  const criancasFiltradas = criancas
+    .filter((c) => {
+      if (filtroGrupo === "todos") return true;
+      const grupo = GRUPOS.find((g) => g.value === filtroGrupo)!;
+      const idade = calcularIdade(c.dataNascimento);
+      return idade >= grupo.min && idade <= grupo.max;
+    })
+    .filter((c) =>
+      busca === "" || normalizar(c.nome).includes(normalizar(busca))
+    );
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -130,6 +136,16 @@ const CriancasPage = () => {
           <CriancaForm onSubmit={handleCriar} onCancel={handleCancel} />
         </div>
       )}
+
+      <div className="mb-3">
+        <input
+          type="text"
+          placeholder="Pesquisar por nome..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          className="w-full sm:w-80 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        />
+      </div>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <button
