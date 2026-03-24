@@ -84,6 +84,9 @@ export default function RelatorioPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Data
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Período
+              </th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Bebês 1
               </th>
@@ -105,7 +108,7 @@ export default function RelatorioPage() {
             {relatorio.length === 0 ? (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   className="px-6 py-8 text-center text-gray-500"
                 >
                   Nenhum culto encontrado.
@@ -119,6 +122,9 @@ export default function RelatorioPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatarData(item.culto.data)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {item.culto.periodo}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                     {item.bebes}
