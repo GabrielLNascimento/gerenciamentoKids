@@ -18,12 +18,10 @@ const GRUPOS: {
   min: number;
   max: number;
 }[] = [
-  { value: "bebes", label: "Bebês", min: 1, max: 2 },
+  { value: "bebes", label: "Bebês 1", min: 1, max: 2 },
   { value: "medios1", label: "Médios 1", min: 3, max: 4 },
-  { value: "medios2", label: "Médios 2", min: 4, max: 5 },
-  { value: "grandes1", label: "Grandes 1", min: 7, max: 8 },
-  { value: "grandes2", label: "Grandes 2", min: 9, max: 10 },
-  { value: "grandes", label: "Grandes 3", min: 11, max: 999 },
+  { value: "medios2", label: "Médios 2", min: 5, max: 6 },
+  { value: "grandes", label: "Grandes", min: 7, max: 11 },
 ];
 
 const calcularIdade = (dataNascimento: string): number => {
