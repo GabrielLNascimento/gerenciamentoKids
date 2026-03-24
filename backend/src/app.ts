@@ -9,6 +9,7 @@ import { ensureInit } from './database/db';
 import criancasRoutes from './routes/criancasRoutes';
 import cultosRoutes from './routes/cultosRoutes';
 import estatisticasRoutes from './routes/estatisticasRoutes';
+import relatorioRoutes from './routes/relatorioRoutes';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(async (_req: Request, _res: Response, next: NextFunction) => {
 app.use('/api/criancas', criancasRoutes);
 app.use('/api/cultos', cultosRoutes);
 app.use('/api/estatisticas', estatisticasRoutes);
+app.use('/api/relatorio', relatorioRoutes);
 
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', message: 'API funcionando' });

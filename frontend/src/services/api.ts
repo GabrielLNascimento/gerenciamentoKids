@@ -83,4 +83,21 @@ export const estatisticasAPI = {
     obter: () => api.get<Estatisticas>("/estatisticas"),
 };
 
+export interface RelatorioItem {
+    id: number;
+    nome: string;
+    periodo: string;
+    data: string;
+    bebes: number;
+    medios1: number;
+    medios2: number;
+    grandes: number;
+    total: number;
+}
+
+// APIs de Relatório
+export const relatorioAPI = {
+    obter: () => api.get<RelatorioItem[]>("/relatorio"),
+};
+
 export default api;
