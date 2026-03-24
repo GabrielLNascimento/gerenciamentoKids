@@ -98,6 +98,22 @@ export const listarCriancasDoCulto = async (req: Request, res: Response) => {
     }
 };
 
+export const listarFrequenciaDaCrianca = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const cultoIds = await dbAll<{ cultoId: number }>(
+            `SELECT "cultoId" FROM presenca WHERE "criancaId" = $1`,
+            [id],
+        );
+
+        res.json(cultoIds.map((row) => row.cultoId));
+    } catch (error) {
+        console.error("Erro ao listar frequência da criança:", error);
+        res.status(500).json({ error: "Erro ao listar frequência da criança" });
+    }
+};
+
 export const marcarCheckout = async (req: Request, res: Response) => {
     try {
         const { cultoId, criancaId } = req.params;

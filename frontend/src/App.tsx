@@ -8,6 +8,7 @@ import CriarCultoPage from './pages/CriarCultoPage';
 import EditarCriancaPage from './pages/EditarCriancaPage';
 import RelatorioCriancaPage from './pages/RelatorioCriancaPage';
 import RelatorioPage from './pages/RelatorioPage';
+import FrequenciaCriancaPage from './pages/FrequenciaCriancaPage';
 
 const NavLink = ({ to, children, onClick }: { to: string; children: React.ReactNode; onClick?: () => void }) => {
   const location = useLocation();
@@ -107,6 +108,7 @@ function App() {
             <Route path="/cultos/:id/editar" element={<CriarCultoPage />} />
             <Route path="/criancas/:id/editar" element={<EditarCriancaPage />} />
             <Route path="/criancas/:id/relatorio" element={<RelatorioCriancaPage />} />
+            <Route path="/criancas/:id/frequencia" element={<FrequenciaCriancaPage />} />
             <Route path="/relatorio" element={<RelatorioPage />} />
           </Routes>
         </main>

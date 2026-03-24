@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { CalendarDays, FileText, Pencil, Trash2 } from "lucide-react";
 import { Crianca } from "../services/api";
 
 interface CriancasTableProps {
@@ -75,26 +76,36 @@ const CriancasTable = ({ criancas, onDelete }: CriancasTableProps) => {
                                 {crianca.telefone}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button
-                                    onClick={() => navigate(`/criancas/${crianca.id}/relatorio`)}
-                                    className="text-gray-500 hover:text-gray-800 mr-4"
-                                >
-                                    Relatório
-                                </button>
-                                <button
-                                    onClick={() => navigate(`/criancas/${crianca.id}/editar`)}
-                                    className="text-primary-600 hover:text-primary-900 mr-4"
-                                >
-                                    Editar
-                                </button>
-                                <button
-                                    onClick={() =>
-                                        crianca.id && onDelete(crianca.id)
-                                    }
-                                    className="text-red-600 hover:text-red-900"
-                                >
-                                    Excluir
-                                </button>
+                                <div className="flex items-center justify-end gap-3">
+                                    <button
+                                        onClick={() => navigate(`/criancas/${crianca.id}/frequencia`)}
+                                        className="text-blue-600 hover:text-blue-900"
+                                        title="Frequência"
+                                    >
+                                        <CalendarDays size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() => navigate(`/criancas/${crianca.id}/relatorio`)}
+                                        className="text-gray-500 hover:text-gray-800"
+                                        title="Relatório"
+                                    >
+                                        <FileText size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() => navigate(`/criancas/${crianca.id}/editar`)}
+                                        className="text-primary-600 hover:text-primary-900"
+                                        title="Editar"
+                                    >
+                                        <Pencil size={18} />
+                                    </button>
+                                    <button
+                                        onClick={() => crianca.id && onDelete(crianca.id)}
+                                        className="text-red-600 hover:text-red-900"
+                                        title="Excluir"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     ))}

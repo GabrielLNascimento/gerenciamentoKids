@@ -56,6 +56,8 @@ export const criancasAPI = {
     atualizarRelatorio: (id: number, relatorio: string | null) =>
         api.patch<Crianca>(`/criancas/${id}/relatorio`, { relatorio }),
     deletar: (id: number) => api.delete(`/criancas/${id}`),
+    listarFrequencia: (id: number) =>
+        api.get<number[]>(`/criancas/${id}/frequencia`),
 };
 
 // APIs de Cultos
