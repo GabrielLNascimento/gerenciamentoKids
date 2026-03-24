@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import CriancasPage from './pages/CriancasPage';
@@ -8,13 +9,14 @@ import EditarCriancaPage from './pages/EditarCriancaPage';
 import RelatorioCriancaPage from './pages/RelatorioCriancaPage';
 import RelatorioPage from './pages/RelatorioPage';
 
-const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+const NavLink = ({ to, children, onClick }: { to: string; children: React.ReactNode; onClick?: () => void }) => {
   const location = useLocation();
   const isActive = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
 
   return (
     <Link
       to={to}
+      onClick={onClick}
       className={`${isActive
           ? 'border-primary-500 text-primary-600'
           : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
@@ -25,7 +27,27 @@ const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) =>
   );
 };
 
+const MobileNavLink = ({ to, children, onClick }: { to: string; children: React.ReactNode; onClick?: () => void }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
+
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className={`${isActive
+          ? 'bg-primary-50 border-primary-500 text-primary-700'
+          : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
+        } block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors`}
+    >
+      {children}
+    </Link>
+  );
+};
+
 function App() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
@@ -45,8 +67,34 @@ function App() {
                   <NavLink to="/relatorio">Relatório</NavLink>
                 </div>
               </div>
+              <div className="flex items-center sm:hidden">
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none"
+                  aria-expanded={mobileMenuOpen}
+                >
+                  <span className="sr-only">Abrir menu</span>
+                  {mobileMenuOpen ? (
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  ) : (
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
+          {mobileMenuOpen && (
+            <div className="sm:hidden border-t border-gray-200 pb-2">
+              <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)}>Dashboard</MobileNavLink>
+              <MobileNavLink to="/criancas" onClick={() => setMobileMenuOpen(false)}>Crianças</MobileNavLink>
+              <MobileNavLink to="/cultos" onClick={() => setMobileMenuOpen(false)}>Eventos</MobileNavLink>
+              <MobileNavLink to="/relatorio" onClick={() => setMobileMenuOpen(false)}>Relatório</MobileNavLink>
+            </div>
+          )}
         </nav>
 
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
