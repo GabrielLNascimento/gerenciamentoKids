@@ -1,13 +1,19 @@
-import { Culto } from '../services/api';
-import { Link } from 'react-router-dom';
+import { Culto } from "../services/api";
+import { Link } from "react-router-dom";
 
 interface CultosTableProps {
   cultos: Culto[];
   onEdit: (culto: Culto) => void;
   onDelete: (id: number) => void;
+  canEdit?: boolean;
 }
 
-const CultosTable = ({ cultos, onEdit, onDelete }: CultosTableProps) => {
+const CultosTable = ({
+  cultos,
+  onEdit,
+  onDelete,
+  canEdit = true,
+}: CultosTableProps) => {
   if (cultos.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
@@ -17,9 +23,9 @@ const CultosTable = ({ cultos, onEdit, onDelete }: CultosTableProps) => {
   }
 
   const formatarData = (data: string) => {
-    const [year, month, day] = data.split('-').map(Number);
+    const [year, month, day] = data.split("-").map(Number);
     const date = new Date(year, month - 1, day); // mês é 0-indexed
-    return date.toLocaleDateString('pt-BR');
+    return date.toLocaleDateString("pt-BR");
   };
 
   return (
@@ -60,18 +66,22 @@ const CultosTable = ({ cultos, onEdit, onDelete }: CultosTableProps) => {
                 >
                   Ver
                 </Link>
-                <button
-                  onClick={() => onEdit(culto)}
-                  className="text-primary-600 hover:text-primary-900 mr-4"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => culto.id && onDelete(culto.id)}
-                  className="text-red-600 hover:text-red-900"
-                >
-                  Excluir
-                </button>
+                {canEdit && (
+                  <>
+                    <button
+                      onClick={() => onEdit(culto)}
+                      className="text-primary-600 hover:text-primary-900 mr-4"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => culto.id && onDelete(culto.id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Excluir
+                    </button>
+                  </>
+                )}
               </td>
             </tr>
           ))}

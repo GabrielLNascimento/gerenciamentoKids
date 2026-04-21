@@ -1,16 +1,26 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Culto, cultosAPI } from '../services/api';
-import CultoForm from '../components/CultoForm';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { Culto, cultosAPI } from "../services/api";
+import CultoForm from "../components/CultoForm";
 
 const CriarCultoPage = () => {
+  const { role } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [culto, setCulto] = useState<Culto | undefined>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (id && id !== 'novo') {
+    // Redireciona usuários não-admin
+    if (role && role !== "admin") {
+      navigate("/cultos");
+      return;
+    }
+  }, [role, navigate]);
+
+  useEffect(() => {
+    if (id && id !== "novo") {
       setLoading(true);
       cultosAPI
         .obter(parseInt(id))
@@ -19,39 +29,43 @@ const CriarCultoPage = () => {
           setLoading(false);
         })
         .catch((error) => {
-          console.error('Erro ao carregar culto:', error);
+          console.error("Erro ao carregar culto:", error);
           setLoading(false);
         });
     }
   }, [id]);
 
-  const handleSubmit = (cultoData: Omit<Culto, 'id'>) => {
-    if (id && id !== 'novo') {
+  const handleSubmit = (cultoData: Omit<Culto, "id">) => {
+    if (id && id !== "novo") {
       cultosAPI
         .atualizar(parseInt(id), cultoData)
         .then(() => {
-          navigate('/cultos');
+          navigate("/cultos");
         })
         .catch((error) => {
-          console.error('Erro ao atualizar culto:', error);
-          alert('Erro ao atualizar culto');
+          console.error("Erro ao atualizar culto:", error);
+          alert("Erro ao atualizar culto");
         });
     } else {
       cultosAPI
         .criar(cultoData)
         .then(() => {
-          navigate('/cultos');
+          navigate("/cultos");
         })
         .catch((error) => {
-          console.error('Erro ao criar culto:', error);
-          alert('Erro ao criar culto');
+          console.error("Erro ao criar culto:", error);
+          alert("Erro ao criar culto");
         });
     }
   };
 
   const handleCancel = () => {
-    navigate('/cultos');
+    navigate("/cultos");
   };
+
+  if (role && role !== "admin") {
+    return null;
+  }
 
   if (loading) {
     return (
@@ -65,15 +79,21 @@ const CriarCultoPage = () => {
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {id && id !== 'novo' ? 'Editar Evento' : 'Novo Evento'}
+          {id && id !== "novo" ? "Editar Evento" : "Novo Evento"}
         </h1>
         <p className="text-gray-600">
-          {id && id !== 'novo' ? 'Atualize as informações do evento' : 'Preencha os dados do novo evento'}
+          {id && id !== "novo"
+            ? "Atualize as informações do evento"
+            : "Preencha os dados do novo evento"}
         </p>
       </div>
 
       <div className="card">
-        <CultoForm culto={culto} onSubmit={handleSubmit} onCancel={handleCancel} />
+        <CultoForm
+          culto={culto}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+        />
       </div>
     </div>
   );

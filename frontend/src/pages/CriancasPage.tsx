@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Crianca, criancasAPI } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 import CriancasTable from "../components/CriancasTable";
 import CriancaForm from "../components/CriancaForm";
 
@@ -44,6 +45,7 @@ const CriancasPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [filtroGrupo, setFiltroGrupo] = useState<GrupoEtario>("todos");
   const [busca, setBusca] = useState("");
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     carregarCriancas();
@@ -95,7 +97,10 @@ const CriancasPage = () => {
   };
 
   const normalizar = (str: string) =>
-    str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
 
   const criancasFiltradas = criancas
     .filter((c) => {
@@ -104,8 +109,8 @@ const CriancasPage = () => {
       const idade = calcularIdade(c.dataNascimento);
       return idade >= grupo.min && idade <= grupo.max;
     })
-    .filter((c) =>
-      busca === "" || normalizar(c.nome).includes(normalizar(busca))
+    .filter(
+      (c) => busca === "" || normalizar(c.nome).includes(normalizar(busca)),
     );
 
   return (
@@ -119,7 +124,7 @@ const CriancasPage = () => {
             Cadastre e gerencie as crianças do sistema
           </p>
         </div>
-        {!showForm && (
+        {!showForm && isLoggedIn && (
           <button onClick={() => setShowForm(true)} className="btn-primary">
             + Nova Criança
           </button>
@@ -180,7 +185,11 @@ const CriancasPage = () => {
       {loading ? (
         <div className="text-center py-8">Carregando...</div>
       ) : (
-        <CriancasTable criancas={criancasFiltradas} onDelete={handleDelete} />
+        <CriancasTable
+          criancas={criancasFiltradas}
+          onDelete={handleDelete}
+          canEdit={isLoggedIn}
+        />
       )}
     </div>
   );
