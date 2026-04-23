@@ -111,4 +111,26 @@ export const relatorioAPI = {
     obter: () => api.get<RelatorioItem[]>("/relatorio"),
 };
 
+export interface Escala {
+    id?: number;
+    sala: string;
+    nome1: string;
+    nome2: string | null;
+    periodo: string;
+    data: string;
+    userId?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+// APIs de Escalas
+export const escalasAPI = {
+    listar: () => api.get<Escala[]>("/escalas"),
+    obter: (id: number) => api.get<Escala>(`/escalas/${id}`),
+    criar: (escala: Omit<Escala, "id">) => api.post<Escala>("/escalas", escala),
+    atualizar: (id: number, escala: Partial<Escala>) =>
+        api.put<Escala>(`/escalas/${id}`, escala),
+    deletar: (id: number) => api.delete(`/escalas/${id}`),
+};
+
 export default api;

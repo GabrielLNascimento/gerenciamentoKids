@@ -19,6 +19,7 @@ import RelatorioPage from "./pages/RelatorioPage";
 import FrequenciaCriancaPage from "./pages/FrequenciaCriancaPage";
 import LoginPage from "./pages/LoginPage";
 import Escala from "./pages/Escala"
+import CriarEscalaPage from "./pages/CriarEscalaPage"
 
 const NavLink = ({
   to,
@@ -108,6 +109,7 @@ function App() {
                   <NavLink to="/">Dashboard</NavLink>
                   <NavLink to="/criancas">Crianças</NavLink>
                   <NavLink to="/cultos">Eventos</NavLink>
+                  {isLoggedIn && <NavLink to="/escala">Escala</NavLink>}
                   <NavLink to="/relatorio">Relatório</NavLink>
                 </div>
               </div>
@@ -190,6 +192,14 @@ function App() {
                     Eventos
                   </MobileNavLink>
                 )}
+                {isLoggedIn && (
+                  <MobileNavLink
+                    to="/escala"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Escala
+                  </MobileNavLink>
+                )}
                 <MobileNavLink
                   to="/relatorio"
                   onClick={() => setMobileMenuOpen(false)}
@@ -268,6 +278,14 @@ function App() {
             />
             <Route path="/relatorio" element={<RelatorioPage />} />
             <Route path="/escala" element={<Escala />} />
+            <Route
+              path="/escala/nova"
+              element={
+                <ProtectedRoute>
+                  <CriarEscalaPage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </main>
       </div>

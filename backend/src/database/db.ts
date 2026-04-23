@@ -91,6 +91,19 @@ export async function initTables(): Promise<void> {
                 END IF;
             END $$;
         `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS escalas (
+                id SERIAL PRIMARY KEY,
+                sala TEXT NOT NULL,
+                nome1 TEXT NOT NULL,
+                nome2 TEXT,
+                periodo TEXT NOT NULL,
+                data TEXT NOT NULL,
+                "userId" TEXT,
+                "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
         console.log("Tabelas PostgreSQL (Neon) verificadas/criadas.");
     } finally {
         client.release();

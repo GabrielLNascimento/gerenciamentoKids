@@ -11,6 +11,7 @@ import cultosRoutes from "./routes/cultosRoutes";
 import estatisticasRoutes from "./routes/estatisticasRoutes";
 import relatorioRoutes from "./routes/relatorioRoutes";
 import authRoutes from "./routes/authRoutes";
+import escalasRoutes from "./routes/escalasRoutes";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/criancas", criancasRoutes);
 app.use("/api/cultos", cultosRoutes);
 app.use("/api/estatisticas", estatisticasRoutes);
 app.use("/api/relatorio", relatorioRoutes);
+app.use("/api/escalas", escalasRoutes);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", message: "API funcionando" });
