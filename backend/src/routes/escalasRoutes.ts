@@ -30,7 +30,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", authenticate, async (req, res) => {
     try {
-        const userId = req.user?.userId;
+        const userId = (req as any).user?.userId;
         const escalaData = req.body;
         const id = await escalasController.criar(escalaData, userId);
         res.status(201).json({ id });
