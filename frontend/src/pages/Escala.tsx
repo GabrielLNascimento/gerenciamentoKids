@@ -160,7 +160,7 @@ const EscalaPage = () => {
               {filteredEscalas.map((escala) => (
                 <tr key={escala.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(escala.data).toLocaleDateString("pt-BR")}
+                    {escala.data.split("-").reverse().join("/")}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {escala.sala}
