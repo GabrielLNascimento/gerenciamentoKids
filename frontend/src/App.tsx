@@ -18,6 +18,7 @@ import RelatorioCriancaPage from "./pages/RelatorioCriancaPage";
 import RelatorioPage from "./pages/RelatorioPage";
 import FrequenciaCriancaPage from "./pages/FrequenciaCriancaPage";
 import LoginPage from "./pages/LoginPage";
+import Escala from "./pages/Escala"
 
 const NavLink = ({
   to,
@@ -266,6 +267,7 @@ function App() {
               element={<FrequenciaCriancaPage />}
             />
             <Route path="/relatorio" element={<RelatorioPage />} />
+            <Route path="/escala" element={<Escala />} />
           </Routes>
         </main>
       </div>
