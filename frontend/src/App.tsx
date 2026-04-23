@@ -18,8 +18,9 @@ import RelatorioCriancaPage from "./pages/RelatorioCriancaPage";
 import RelatorioPage from "./pages/RelatorioPage";
 import FrequenciaCriancaPage from "./pages/FrequenciaCriancaPage";
 import LoginPage from "./pages/LoginPage";
-import Escala from "./pages/Escala"
+import Escala from "./pages/Escala";
 import CriarEscalaPage from "./pages/CriarEscalaPage"
+import EditarEscalaPage from "./pages/EditarEscalaPage";
 
 const NavLink = ({
   to,
@@ -109,7 +110,7 @@ function App() {
                   <NavLink to="/">Dashboard</NavLink>
                   <NavLink to="/criancas">Crianças</NavLink>
                   <NavLink to="/cultos">Eventos</NavLink>
-                  {isLoggedIn && <NavLink to="/escala">Escala</NavLink>}
+                  <NavLink to="/escala">Escala</NavLink>
                   <NavLink to="/relatorio">Relatório</NavLink>
                 </div>
               </div>
@@ -176,7 +177,7 @@ function App() {
                 <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)}>
                   Dashboard
                 </MobileNavLink>
-                {isLoggedIn && (
+                { (
                   <MobileNavLink
                     to="/criancas"
                     onClick={() => setMobileMenuOpen(false)}
@@ -184,7 +185,7 @@ function App() {
                     Crianças
                   </MobileNavLink>
                 )}
-                {isLoggedIn && (
+                {(
                   <MobileNavLink
                     to="/cultos"
                     onClick={() => setMobileMenuOpen(false)}
@@ -192,14 +193,14 @@ function App() {
                     Eventos
                   </MobileNavLink>
                 )}
-                {isLoggedIn && (
+                {
                   <MobileNavLink
                     to="/escala"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Escala
                   </MobileNavLink>
-                )}
+                }
                 <MobileNavLink
                   to="/relatorio"
                   onClick={() => setMobileMenuOpen(false)}
@@ -207,24 +208,7 @@ function App() {
                   Relatório
                 </MobileNavLink>
 
-                {isLoggedIn ? (
-                  <button
-                    onClick={() => {
-                      logout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="block w-full text-left pl-3 pr-4 py-2 text-gray-600 hover:bg-gray-50"
-                  >
-                    Logout
-                  </button>
-                ) : (
-                  <MobileNavLink
-                    to="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Login
-                  </MobileNavLink>
-                )}
+                
               </div>
             )}
           </div>
@@ -283,6 +267,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CriarEscalaPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/escala/:id/editar"
+              element={
+                <ProtectedRoute>
+                  <EditarEscalaPage />
                 </ProtectedRoute>
               }
             />
