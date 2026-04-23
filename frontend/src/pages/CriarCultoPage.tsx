@@ -5,19 +5,18 @@ import { Culto, cultosAPI } from "../services/api";
 import CultoForm from "../components/CultoForm";
 
 const CriarCultoPage = () => {
-  const { role } = useAuth();
+  const { isLoggedIn } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [culto, setCulto] = useState<Culto | undefined>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Redireciona usuários não-admin
-    if (role && role !== "admin") {
+    if (!isLoggedIn) {
       navigate("/cultos");
       return;
     }
-  }, [role, navigate]);
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     if (id && id !== "novo") {
@@ -63,7 +62,7 @@ const CriarCultoPage = () => {
     navigate("/cultos");
   };
 
-  if (role && role !== "admin") {
+  if (!isLoggedIn) {
     return null;
   }
 

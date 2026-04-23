@@ -5,7 +5,7 @@ import { Crianca, criancasAPI } from "../services/api";
 import CriancaForm from "../components/CriancaForm";
 
 const EditarCriancaPage = () => {
-  const { role } = useAuth();
+  const { isLoggedIn } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [crianca, setCrianca] = useState<Crianca | undefined>();
@@ -13,11 +13,11 @@ const EditarCriancaPage = () => {
 
   useEffect(() => {
     // Redireciona usuários não-admin
-    if (role && role !== "admin") {
+    if (!isLoggedIn) {
       navigate("/criancas");
       return;
     }
-  }, [role, navigate]);
+  }, [isLoggedIn, navigate]);
 
   useEffect(() => {
     if (!id) return;
@@ -50,7 +50,7 @@ const EditarCriancaPage = () => {
     navigate("/criancas");
   };
 
-  if (role && role !== "admin") {
+  if (!isLoggedIn) {
     return null;
   }
 
