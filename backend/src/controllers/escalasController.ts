@@ -2,7 +2,7 @@ import { dbGet, dbAll, dbRun } from "../database/db";
 
 export interface Escala {
     id?: number;
-    sala: string;
+    categoria: string;
     nome1: string;
     nome2: string | null;
     periodo: string;
@@ -23,8 +23,8 @@ export const escalasController = {
 
     async criar(escala: Omit<Escala, "id">, userId?: string) {
         const result = await dbRun(
-            "INSERT INTO escalas (sala, nome1, nome2, periodo, data, \"userId\") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-            [escala.sala, escala.nome1, escala.nome2 || null, escala.periodo, escala.data, userId]
+            "INSERT INTO escalas (categoria, nome1, nome2, periodo, data, \"userId\") VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+            [escala.categoria, escala.nome1, escala.nome2 || null, escala.periodo, escala.data, userId]
         );
         return result.lastID;
     },
@@ -34,9 +34,9 @@ export const escalasController = {
         const valores: any[] = [];
         let idx = 1;
 
-        if (escala.sala !== undefined) {
-            campos.push(`sala = $${idx++}`);
-            valores.push(escala.sala);
+if (escala.categoria !== undefined) {
+            campos.push(`categoria = $${idx++}`);
+            valores.push(escala.categoria);
         }
         if (escala.nome1 !== undefined) {
             campos.push(`nome1 = $${idx++}`);

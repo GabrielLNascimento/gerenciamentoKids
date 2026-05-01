@@ -16,6 +16,17 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+// Handle 401 errors
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            alert("Sessão expirada. Faça logout e login novamente.");
+        }
+        return Promise.reject(error);
+    }
+);
+
 export interface Crianca {
     id?: number;
     nome: string;
@@ -113,7 +124,7 @@ export const relatorioAPI = {
 
 export interface Escala {
     id?: number;
-    sala: string;
+    categoria: string;
     nome1: string;
     nome2: string | null;
     periodo: string;

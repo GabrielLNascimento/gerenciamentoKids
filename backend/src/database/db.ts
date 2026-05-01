@@ -94,7 +94,7 @@ export async function initTables(): Promise<void> {
         await client.query(`
             CREATE TABLE IF NOT EXISTS escalas (
                 id SERIAL PRIMARY KEY,
-                sala TEXT NOT NULL,
+                categoria TEXT NOT NULL,
                 nome1 TEXT NOT NULL,
                 nome2 TEXT,
                 periodo TEXT NOT NULL,
@@ -103,6 +103,18 @@ export async function initTables(): Promise<void> {
                 "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
+        `);
+        await client.query(`
+            DO $$
+            BEGIN
+                IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'escalas' AND column_name = 'sala') THEN
+                    ALTER TABLE escalas ADD COLUMN IF NOT EXISTS categoria TEXT;
+                    UPDATE escalas SET categoria = sala WHERE categoria IS NULL AND sala IS NOT NULL;
+                    ALTER TABLE escalas DROP COLUMN sala;
+                ELSE
+                    ALTER TABLE escalas ADD COLUMN IF NOT EXISTS categoria TEXT;
+                END IF;
+            END $$;
         `);
         console.log("Tabelas PostgreSQL (Neon) verificadas/criadas.");
     } finally {

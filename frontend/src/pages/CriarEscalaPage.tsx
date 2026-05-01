@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { escalasAPI } from "../services/api";
 
 interface EscalaFormData {
-  sala: string;
+  categoria: string;
   nome1: string;
   nome2: string;
   periodo: string;
@@ -15,7 +15,7 @@ const CriarEscalaPage = () => {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<EscalaFormData>({
-    sala: "",
+    categoria: "",
     nome1: "",
     nome2: "",
     periodo: "",
@@ -29,17 +29,19 @@ const CriarEscalaPage = () => {
     }
   }, [isLoggedIn, navigate]);
 
-  const salas = ["Bebês 1", "Médios 1", "Médios 2", "Grandes"];
+  const categorias = ["Bebês 1", "Médios 1", "Médios 2", "Grandes", "Recepção"];
   const periodos = ["Manhã", "Noite"];
+
+  const isRecepcao = formData.categoria === "Recepção";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await escalasAPI.criar({
-        sala: formData.sala,
+        categoria: formData.categoria,
         nome1: formData.nome1,
-        nome2: formData.nome2 || null,
+        nome2: isRecepcao ? null : (formData.nome2 || null),
         periodo: formData.periodo,
         data: formData.data,
       });
@@ -70,20 +72,20 @@ const CriarEscalaPage = () => {
       <div className="card">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="sala" className="block text-sm font-medium text-gray-700">
-              Sala
+            <label htmlFor="categoria" className="block text-sm font-medium text-gray-700">
+              Categoria
             </label>
             <select
-              id="sala"
-              value={formData.sala}
-              onChange={(e) => setFormData({ ...formData, sala: e.target.value })}
+              id="categoria"
+              value={formData.categoria}
+              onChange={(e) => setFormData({ ...formData, categoria: e.target.value, nome2: "" })}
               className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
               required
             >
-              <option value="">Selecione a sala</option>
-              {salas.map((sala) => (
-                <option key={sala} value={sala}>
-                  {sala}
+              <option value="">Selecione a categoria</option>
+              {categorias.map((categoria) => (
+                <option key={categoria} value={categoria}>
+                  {categoria}
                 </option>
               ))}
             </select>
@@ -91,24 +93,26 @@ const CriarEscalaPage = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nomes (máximo 2)
+              {isRecepcao ? "Nome" : "Nomes (máximo 2)"}
             </label>
             <div className="space-y-2">
               <input
                 type="text"
                 value={formData.nome1}
                 onChange={(e) => setFormData({ ...formData, nome1: e.target.value })}
-                placeholder="Nome 1"
+                placeholder={isRecepcao ? "Nome" : "Nome 1"}
                 className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 required
               />
-              <input
-                type="text"
-                value={formData.nome2}
-                onChange={(e) => setFormData({ ...formData, nome2: e.target.value })}
-                placeholder="Nome 2 (opcional)"
-                className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              />
+              {!isRecepcao && (
+                <input
+                  type="text"
+                  value={formData.nome2}
+                  onChange={(e) => setFormData({ ...formData, nome2: e.target.value })}
+                  placeholder="Nome 2 (opcional)"
+                  className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                />
+              )}
             </div>
           </div>
 

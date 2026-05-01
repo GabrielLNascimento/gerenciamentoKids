@@ -20,7 +20,7 @@ router.post("/login", async (req, res) => {
 
   if (role) {
     const token = jwt.sign({ role }, process.env.JWT_SECRET || "secret", {
-      expiresIn: "1h",
+      expiresIn: "24h",
     });
     res.json({ success: true, token, role });
   } else {

@@ -8,11 +8,11 @@ const EscalaPage = () => {
   const [escalas, setEscalas] = useState<Escala[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterSala, setFilterSala] = useState("");
+  const [filterCategoria, setFilterSala] = useState("");
   const [filterPeriodo, setFilterPeriodo] = useState("");
   const [filterData, setFilterData] = useState("");
 
-  const salas = ["Bebês 1", "Médios 1", "Médios 2", "Grandes"];
+  const categorias = ["Bebês 1", "Médios 1", "Médios 2", "Grandes", "Recepção"];
   const periodos = ["Manhã", "Noite"];
 
   const loadEscalas = async () => {
@@ -46,7 +46,7 @@ const EscalaPage = () => {
     const matchesSearch =
       escala.nome1.toLowerCase().includes(term) ||
       (escala.nome2 && escala.nome2.toLowerCase().includes(term));
-    const matchesSala = !filterSala || escala.sala === filterSala;
+    const matchesSala = !filterCategoria || escala.categoria === filterCategoria;
     const matchesPeriodo = !filterPeriodo || escala.periodo === filterPeriodo;
     const matchesData = !filterData || escala.data === filterData;
     return matchesSearch && matchesSala && matchesPeriodo && matchesData;
@@ -81,14 +81,14 @@ const EscalaPage = () => {
         />
         <div className="flex flex-wrap gap-2">
           <select
-            value={filterSala}
+            value={filterCategoria}
             onChange={(e) => setFilterSala(e.target.value)}
             className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           >
-            <option value="">Todas as salas</option>
-            {salas.map((sala) => (
-              <option key={sala} value={sala}>
-                {sala}
+            <option value="">Todas as categorias</option>
+            {categorias.map((categoria) => (
+              <option key={categoria} value={categoria}>
+                {categoria}
               </option>
             ))}
           </select>
@@ -110,7 +110,7 @@ const EscalaPage = () => {
             onChange={(e) => setFilterData(e.target.value)}
             className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
           />
-          {(filterSala || filterPeriodo || filterData || searchTerm) && (
+          {(filterCategoria || filterPeriodo || filterData || searchTerm) && (
             <button
               onClick={() => {
                 setFilterSala("");
@@ -141,7 +141,7 @@ const EscalaPage = () => {
                   Data
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Sala
+                  Categoria
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Voluntários
@@ -163,7 +163,7 @@ const EscalaPage = () => {
                     {escala.data.split("-").reverse().join("/")}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {escala.sala}
+                    {escala.categoria}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {escala.nome1}
